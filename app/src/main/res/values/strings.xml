@@ -7,7 +7,14 @@
     <string name="title_list">Lista</string>
     <string name="title_export">Eksportuj</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
+    <!-- add new product -->
+    <string name="product_name">Nazwa produktu</string>
+    <string name="five_percent">5%</string>
+    <string name="eight_percent">8%</string>
+    <string name="twenty_three_percent">23%</string>
+    <string name="barcode">Kod kreskowy</string>
+    <string name="price_net">Cena netto</string>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
