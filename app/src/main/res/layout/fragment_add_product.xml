@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.nostra.koza.anetax.AddProductFragment"
-    android:background="#E0F2F1">
+    android:background="#FFFFFF">
 
     <EditText
         android:id="@+id/product_name_et"
@@ -22,13 +22,15 @@
         android:layout_margin="10dp"
         android:ems="10"
         android:hint="@string/barcode"
-        android:inputType="textPersonName" />
+        android:inputType="number" />
 
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:id="@+id/tax_radio_group"
         android:gravity="center_horizontal"
+        android:checkedButton="@+id/tax_five_percent"
         android:orientation="horizontal">
 
         <RadioButton
@@ -36,6 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_horizontal_margin"
+            android:focusedByDefault="true"
             android:text="@string/five_percent" />
 
         <RadioButton
@@ -57,16 +60,17 @@
         android:id="@+id/price_et"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
         android:layout_margin="10dp"
+        android:ems="10"
         android:hint="@string/price_net"
-        android:inputType="textPersonName" />
+        android:inputType="numberDecimal" />
 
     <Button
         android:id="@+id/add_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
+        android:inputType="numberDecimal"
         android:background="@drawable/add_button_shape"
         android:text="@string/title_add" />
 
