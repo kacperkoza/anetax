@@ -65,6 +65,14 @@ class PriceEntryDao(private val dao: Dao<PriceEntry, Int>) {
 
     fun deleteById(id: Int) = dao.deleteById(id)
 
+    fun deleteWhereProductId(productId: Int) {
+        val prices = dao.queryForFieldValues(mapOf<String, Any>(Pair<String, Any>("productId", productId)))
+        prices.forEach {
+            deleteById(it.id!!)
+        }
+
+    }
+
 }
 
 class ProductDao(private val dao: Dao<Product, Int>) {
@@ -74,6 +82,8 @@ class ProductDao(private val dao: Dao<Product, Int>) {
     fun deleteById(productId: Int) = dao.deleteById(productId)
 
     fun findAll(): List<Product> = dao.queryForAll()
+
+    fun findById(productId: Int) = dao.queryForId(productId)
 
     fun findByBarcodeOrName(query: String): List<Product> =
             findAll().filter { it.barcode.contains(query) || containsQueryIgnoringCase(it.name, query) }.distinct()

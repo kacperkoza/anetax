@@ -1,10 +1,9 @@
 package com.nostra.koza.anetax
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,6 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.baoyz.swipemenulistview.SwipeMenuCreator
-import com.baoyz.swipemenulistview.SwipeMenuItem
 import com.nostra.koza.anetax.util.formatDate
 import com.nostra.koza.anetax.util.formatPrice
 import com.nostra.koza.anetax.util.shortToast
@@ -56,15 +54,13 @@ class ProductDetailsFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         priceEntryDao = PriceEntryDao(ProductDatabase(context).getDao(PriceEntry::class.java))
         productName.text = product.name
         barcode.text = product.barcode
         priceListAdapter = PriceListAdapter(context, product.entries)
         listView.adapter = priceListAdapter
-        val swipeMenuCreator = SwipeMenuCreator({ menu ->
-            menu.addMenuItem(buildDeleteSwipeItem())
-        })
-        listView.setMenuCreator(swipeMenuCreator)
+        listView.setMenuCreator({ menu -> menu.addMenuItem(SwipeMenuItemBuilder.buildDeleteItem(context)) })
         listView.setOnMenuItemClickListener { position, menu, index ->
             when (index) {
                 0 -> deletePriceAtPosition(position)
@@ -75,11 +71,11 @@ class ProductDetailsFragment : Fragment() {
 
     private fun deletePriceAtPosition(position: Int): Boolean {
         if (position == priceList.size) {
-            shortToast(context, "Nie można usunac ostatniej pozycji")
+            shortToast(context, getString(R.string.you_cant_delete_last_position))
             return true
         }
         if (priceList.size == 1) {
-            shortToast(context, "Nie można usunac ostatniej ceny")
+            shortToast(context, getString(R.string.you_cant_delete_last_price))
             return true
         }
         val price = priceList.removeAt(position)
@@ -87,15 +83,6 @@ class ProductDetailsFragment : Fragment() {
         priceListAdapter = PriceListAdapter(context, priceList)
         return true
     }
-
-    private fun buildDeleteSwipeItem(): SwipeMenuItem {
-        val deleteItem = SwipeMenuItem(context)
-        deleteItem.background = ColorDrawable(Color.RED)
-        deleteItem.width = 180
-        deleteItem.setIcon(R.drawable.ic_delete_white_24dp)
-        return deleteItem
-    }
-
 
 }
 

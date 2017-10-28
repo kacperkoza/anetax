@@ -8,6 +8,9 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:imeOptions="actionDone"
+        android:inputType="textImeMultiLine"
         android:id="@+id/search_et"
         android:hint="@string/find_by_barcode_or_name"/>
 

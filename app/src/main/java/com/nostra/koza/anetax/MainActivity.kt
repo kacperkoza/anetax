@@ -19,6 +19,12 @@ class MainActivity : AppCompatActivity() {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        supportFragmentManager.popBackStack()
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        return true
+    }
+
     private val mOnNavigationItemSelectedListener = OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_add -> {
