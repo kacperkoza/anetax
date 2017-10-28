@@ -2,24 +2,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.nostra.koza.anetax.ProductDetailsFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/white"
+    tools:context="com.nostra.koza.anetax.ProductDetailsFragment">
 
     <TextView
-    android:id="@+id/product_name"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+        android:id="@+id/product_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="20dp"
-    android:textSize="25sp"
-    android:text="Nazwa jakiegos produktu" />
+        android:text="Nazwa jakiegos produktu"
+        android:textSize="25sp" />
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp">
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
@@ -42,12 +43,11 @@
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
-        android:background="#00695C">
-    </LinearLayout>
+        android:background="#00695C"></LinearLayout>
 
     <com.baoyz.swipemenulistview.SwipeMenuListView
+        android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/listView"/>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

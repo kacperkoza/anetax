@@ -1,85 +1,94 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/background_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/white"
     android:orientation="vertical"
     tools:context="com.nostra.koza.anetax.AddProductFragment">
 
-    <EditText
-        android:id="@+id/product_name_et"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:ems="10"
-        android:hint="@string/product_name"
-        android:inputType="textPersonName" />
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/barcode_et"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:ems="10"
-        android:hint="@string/barcode"
-        android:inputType="number" />
+        <EditText
+            android:id="@+id/product_name_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:ems="10"
+            android:hint="@string/product_name"
+            android:inputType="textPersonName" />
 
-    <RadioGroup
-        android:id="@+id/tax_radio_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:checkedButton="@+id/tax_five_percent"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/barcode_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:ems="10"
+            android:hint="@string/barcode"
+            android:inputType="number" />
 
-        <RadioButton
-            android:id="@+id/tax_five_percent"
+        <RadioGroup
+            android:id="@+id/tax_radio_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:focusedByDefault="true"
-            android:text="@string/five_percent" />
+            android:layout_gravity="center_horizontal"
+            android:checkedButton="@+id/tax_five_percent"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
 
-        <RadioButton
-            android:id="@+id/tax_eight_percent"
+            <RadioButton
+                android:id="@+id/tax_five_percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:focusedByDefault="true"
+                android:text="@string/five_percent" />
+
+            <RadioButton
+                android:id="@+id/tax_eight_percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:text="@string/eight_percent" />
+
+            <RadioButton
+                android:id="@+id/tax_twenty_three_percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:text="@string/twenty_three_percent" />
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/price_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:ems="10"
+            android:hint="@string/price_net"
+            android:imeOptions="actionDone"
+            android:inputType="numberDecimal" />
+
+        <Button
+            android:id="@+id/add_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@drawable/add_button_shape"
+            android:inputType="numberDecimal"
+            android:text="@string/title_add" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/add_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:text="@string/eight_percent" />
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_photo_camera_white_24dp" />
+    </LinearLayout>
 
-        <RadioButton
-            android:id="@+id/tax_twenty_three_percent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:text="@string/twenty_three_percent" />
-    </RadioGroup>
 
-    <EditText
-        android:id="@+id/price_et"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:ems="10"
-        android:hint="@string/price_net"
-        android:inputType="numberDecimal" />
-
-    <Button
-        android:id="@+id/add_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:background="@drawable/add_button_shape"
-        android:inputType="numberDecimal"
-        android:text="@string/title_add" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_photo_camera_white_24dp" />
-
-</LinearLayout>
+</ScrollView>

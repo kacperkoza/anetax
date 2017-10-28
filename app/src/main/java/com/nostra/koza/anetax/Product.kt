@@ -22,9 +22,7 @@ data class Product(
         val priceNet: Double,
 
         @DatabaseField
-        val taxRate: TaxRate,
-
-        val entries: List<PriceEntry> = emptyList()
+        val taxRate: TaxRate
 ): Serializable {
     constructor() : this(null, "", "", 0.0, TaxRate.EIGHT_PERCENT)
 

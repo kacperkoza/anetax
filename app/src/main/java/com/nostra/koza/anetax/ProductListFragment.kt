@@ -14,6 +14,7 @@ import android.widget.EditText
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.nostra.koza.anetax.util.Keypad
 import com.nostra.koza.anetax.util.formatDate
 import com.nostra.koza.anetax.util.formatPrice
 import kotlinx.android.synthetic.main.fragment_product_list.*
@@ -35,8 +36,9 @@ class ProductListFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        Keypad.hideKeypad(activity)
         productAdapter = ProductAdapter(context)
-        productAdapter.registerDataSetObserver(object: DataSetObserver() {
+        productAdapter.registerDataSetObserver(object : DataSetObserver() {
             override fun onChanged() {
                 noProductsText.visibility = if (productAdapter.isEmpty()) View.VISIBLE else View.GONE
             }
@@ -50,7 +52,7 @@ class ProductListFragment : Fragment() {
         listView.setOnMenuItemClickListener { position, _, index ->
             when (index) {
                 1 -> {
-                    val productId = productAdapter.getItem(position).id!!
+                    val productId = (productAdapter.getItem(position) as Product).id!!
                     productAdapter.deleteProductAndPricesById(productId)
                 }
                 0 -> openProductDetailsFragment(position)
@@ -66,7 +68,7 @@ class ProductListFragment : Fragment() {
     private fun openProductDetailsFragment(position: Int): Boolean {
         fragmentManager
                 .beginTransaction()
-                .replace(R.id.content, ProductDetailsFragment.newInstance(productAdapter.getItem(position)))
+                .replace(R.id.content, ProductDetailsFragment.newInstance(productAdapter.getItem(position) as Product))
                 .addToBackStack(null)
                 .commit()
         return true
@@ -90,45 +92,63 @@ class ProductAdapter(val context: Context) : BaseAdapter() {
 
     private val productDao = ProductDao(ProductDatabase(context).getDao(Product::class.java))
     private val priceEntryDao = PriceEntryDao(ProductDatabase(context).getDao(PriceEntry::class.java))
-    private val products: List<Product> = productDao.findAll()
+    private var products: List<Product> = productDao.findAll()
     private var filteredProducts: List<Product> = products
 
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val rowView = inflater.inflate(R.layout.product_row, parent, false)
+        var holder: ViewHolder
+        var view = convertView
 
-        val productName: TextView = rowView.findViewById(R.id.product_name)
-        val productBarcode: TextView = rowView.findViewById(R.id.product_barcode)
-        val productPrice: TextView = rowView.findViewById(R.id.product_price_margin)
-        val addedAt: TextView = rowView.findViewById(R.id.last_price_date)
-
-        val product = filteredProducts[position]
-        productName.text = product.name
-        productBarcode.text = product.barcode
+        if (convertView != null) {
+            holder = convertView.tag as ViewHolder
+        } else {
+            val inflater = LayoutInflater.from(context)
+            view = inflater.inflate(R.layout.product_row, parent, false)
+            holder = ViewHolder(view)
+            view.tag = holder
+        }
+        val product = getItem(position) as Product
+        holder.productName.text = product.name
+        holder.barcode.text = product.barcode
 
         val mostRecentPrice = priceEntryDao.findByProductId(product.id!!).last()
-        productPrice.text = "${formatPrice(mostRecentPrice.price)} zł"
-        addedAt.text = formatDate(mostRecentPrice.date)
+        holder.price.text = "${formatPrice(mostRecentPrice.price)} zł"
+        holder.date.text = formatDate(mostRecentPrice.date)
 
-        return rowView
+        return view!!
     }
 
-    override fun getItemId(position: Int): Long = filteredProducts.get(position).id!!.toLong()
+    override fun getItemId(position: Int): Long = this.filteredProducts.get(position).id!!.toLong()
 
-    override fun getItem(position: Int): Product = filteredProducts.get(position)
+    override fun getItem(position: Int): Any = this.filteredProducts.get(position)
 
-    override fun getCount(): Int = filteredProducts.size
+    override fun getCount(): Int = this.filteredProducts.size
 
     fun filterByText(text: String) {
-        filteredProducts = products.filter { text.toLowerCase() in it.name || text in it.barcode }
+        filteredProducts = products.filter { it.name.contains(text.toLowerCase()) || it.barcode.contains(text) }
+//        this.filteredProducts = productDao.findByBarcodeOrName(text)
         notifyDataSetChanged()
     }
 
     fun deleteProductAndPricesById(productId: Int): Boolean {
         productDao.deleteById(productId)
         priceEntryDao.deleteWhereProductId(productId)
+        filteredProducts = products
+
         notifyDataSetChanged()
         return true
+    }
+
+    class ViewHolder(val view: View) {
+        @BindView(R.id.product_name) lateinit var productName: TextView
+        @BindView(R.id.product_barcode) lateinit var barcode: TextView
+        @BindView(R.id.product_price_margin) lateinit var price: TextView
+        @BindView(R.id.last_price_date) lateinit var date: TextView
+
+        init {
+            ButterKnife.bind(this, view)
+        }
     }
 
 }

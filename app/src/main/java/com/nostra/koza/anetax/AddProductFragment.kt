@@ -16,6 +16,7 @@ import butterknife.OnClick
 import com.basgeekball.awesomevalidation.AwesomeValidation
 import com.basgeekball.awesomevalidation.ValidationStyle
 import com.basgeekball.awesomevalidation.utility.RegexTemplate
+import com.nostra.koza.anetax.util.Keypad
 import com.nostra.koza.anetax.util.shortToast
 
 class AddProductFragment : Fragment() {
@@ -43,9 +44,10 @@ class AddProductFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        Keypad.hideKeypad(activity)
         awesomeValidation = AwesomeValidation(ValidationStyle.BASIC)
         awesomeValidation.addValidation(activity, R.id.product_name_et, RegexTemplate.NOT_EMPTY, R.string.invalid_product_name)
-        awesomeValidation.addValidation(activity, R.id.barcode_et, "[0-9]+", R.string.invalid_barcode)
+        awesomeValidation.addValidation(activity, R.id.barcode_et, "[0-9]{0,}", R.string.invalid_barcode)
         awesomeValidation.addValidation(activity, R.id.price_et, "([0-9]+.[0-9]{1,2})|[0-9]+", R.string.invalid_price)
         val productDb = ProductDatabase(context)
         productDao = ProductDao(productDb.getDao(Product::class.java))
@@ -69,6 +71,8 @@ class AddProductFragment : Fragment() {
         Log.i("OnClick", "Product added, list = ${productDao.findAll()}")
         Log.i("OnClick", "Product prices, list = ${priceEntryDao.findAll()}")
         clearAddProductForm()
+        Keypad.hideKeypad(activity)
+        productNameText.requestFocus()
     }
 
     private fun getTaxRate(): TaxRate = when (taxRadioGroup.checkedRadioButtonId) {
@@ -100,5 +104,8 @@ class AddProductFragment : Fragment() {
         priceText.text = ""
         taxRadioGroup.check(R.id.tax_five_percent)
     }
+
+    @OnClick(R.id.background_layout)
+    fun hideKeypad() = Keypad.hideKeypad(activity)
 
 }

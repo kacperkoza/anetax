@@ -12,6 +12,7 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.nostra.koza.anetax.util.Keypad
 import com.nostra.koza.anetax.util.formatDate
 import com.nostra.koza.anetax.util.formatPrice
 import com.nostra.koza.anetax.util.shortToast
@@ -50,6 +51,7 @@ class ProductDetailsFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        Keypad.hideKeypad(activity)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         productName.text = product.name
         barcode.text = product.barcode
