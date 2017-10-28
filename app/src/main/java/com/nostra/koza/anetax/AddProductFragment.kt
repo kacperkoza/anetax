@@ -63,9 +63,8 @@ class AddProductFragment : Fragment() {
                 barcodeText.text.toString(),
                 priceNet,
                 taxRate))
-        val priceWithVat = priceNet * (1 + taxRate.rate)
-        val priceWithMarginAndVat = priceWithVat * (1 + Product.MARGIN_RATE)
-        priceEntryDao.add(PriceEntry(null, product.id!!, priceWithMarginAndVat))
+
+        priceEntryDao.add(PriceEntry(null, product.id!!, PriceCalculator.calculateMarginPrice(priceNet, taxRate)))
         shortToast(context, getString(R.string.successfully_added_new_product))
         Log.i("OnClick", "Product added, list = ${productDao.findAll()}")
         Log.i("OnClick", "Product prices, list = ${priceEntryDao.findAll()}")
@@ -86,8 +85,9 @@ class AddProductFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        data ?: return
         if (requestCode == BarcodeScanActivity.SCAN_RESULT_CODE) {
-            val scanResult = data!!.getSerializableExtra(BarcodeScanActivity.SCAN_RESULT_KEY) as ScanResult
+            val scanResult = data.getSerializableExtra(BarcodeScanActivity.SCAN_RESULT_KEY) as ScanResult
             Log.i(TAG, scanResult.toString())
             barcodeText.text = scanResult.barcode
         }

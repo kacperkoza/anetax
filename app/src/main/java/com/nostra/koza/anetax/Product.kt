@@ -70,8 +70,9 @@ class PriceEntryDao(private val dao: Dao<PriceEntry, Int>) {
         prices.forEach {
             deleteById(it.id!!)
         }
-
     }
+
+    fun findByProductId(productId: Int): List<PriceEntry> = findAll().filter { it.productId == productId }
 
 }
 

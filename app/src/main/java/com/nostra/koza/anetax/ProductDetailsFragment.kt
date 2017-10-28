@@ -12,7 +12,6 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.baoyz.swipemenulistview.SwipeMenuCreator
 import com.nostra.koza.anetax.util.formatDate
 import com.nostra.koza.anetax.util.formatPrice
 import com.nostra.koza.anetax.util.shortToast
@@ -24,9 +23,7 @@ class ProductDetailsFragment : Fragment() {
     @BindView(R.id.product_name) lateinit var productName: TextView
     @BindView(R.id.product_barcode) lateinit var barcode: TextView
 
-    private lateinit var priceList: MutableList<PriceEntry>
     private lateinit var priceListAdapter: PriceListAdapter
-    private lateinit var priceEntryDao: PriceEntryDao
     private lateinit var product: Product
 
     companion object {
@@ -47,7 +44,6 @@ class ProductDetailsFragment : Fragment() {
         val view = inflater!!.inflate(R.layout.fragment_product_details, container, false)
         product = arguments.get(PRODUCT_KEY) as Product
         Log.i(TAG, product.toString())
-        priceList = product.entries.toMutableList()
         ButterKnife.bind(this, view)
         return view
     }
@@ -55,38 +51,28 @@ class ProductDetailsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        priceEntryDao = PriceEntryDao(ProductDatabase(context).getDao(PriceEntry::class.java))
         productName.text = product.name
         barcode.text = product.barcode
-        priceListAdapter = PriceListAdapter(context, product.entries)
+        priceListAdapter = PriceListAdapter(context, product.id!!)
         listView.adapter = priceListAdapter
         listView.setMenuCreator({ menu -> menu.addMenuItem(SwipeMenuItemBuilder.buildDeleteItem(context)) })
-        listView.setOnMenuItemClickListener { position, menu, index ->
+        listView.setOnMenuItemClickListener { position, _, index ->
             when (index) {
-                0 -> deletePriceAtPosition(position)
+                0 -> {
+                    priceListAdapter.removePriceElement(position)
+                    true
+                }
                 else -> true
             }
         }
     }
-
-    private fun deletePriceAtPosition(position: Int): Boolean {
-        if (position == priceList.size) {
-            shortToast(context, getString(R.string.you_cant_delete_last_position))
-            return true
-        }
-        if (priceList.size == 1) {
-            shortToast(context, getString(R.string.you_cant_delete_last_price))
-            return true
-        }
-        val price = priceList.removeAt(position)
-        priceEntryDao.deleteById(price.id!!)
-        priceListAdapter = PriceListAdapter(context, priceList)
-        return true
-    }
-
 }
 
-class PriceListAdapter(val context: Context, val priceEntries: List<PriceEntry>) : BaseAdapter() {
+class PriceListAdapter(val context: Context, id: Int) : BaseAdapter() {
+
+    private val priceEntryDao: PriceEntryDao = PriceEntryDao(ProductDatabase(context).getDao(PriceEntry::class.java))
+    private val priceEntries: List<PriceEntry> = priceEntryDao.findByProductId(id)
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val rowView = inflater.inflate(R.layout.price_row, parent, false)
@@ -105,4 +91,23 @@ class PriceListAdapter(val context: Context, val priceEntries: List<PriceEntry>)
 
     override fun getCount(): Int = priceEntries.size
 
+    fun removePriceElement(position: Int): Boolean {
+        if (isLastElement(position)) {
+            toast(R.string.you_cant_delete_last_position)
+            return false
+        }
+        if (isLastPrice()) {
+            toast(R.string.you_cant_delete_last_price)
+            return false
+        }
+        priceEntryDao.deleteById(getItemId(position).toInt())
+        notifyDataSetChanged()
+        return true
+    }
+
+    private fun isLastElement(position: Int): Boolean = priceEntries.size == position
+
+    private fun isLastPrice(): Boolean = priceEntries.size == 1
+
+    private fun toast(id: Int) = shortToast(context, context.getString(id))
 }

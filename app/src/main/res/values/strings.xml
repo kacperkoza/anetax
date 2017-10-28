@@ -17,7 +17,7 @@
     <string name="price_net">Cena netto</string>
 
     <string name="invalid_product_name">Musisz podać nazwę produktu</string>
-    <string name="invalid_barcode">Kod produktu musi składać się z 10 cyfr</string>
+    <string name="invalid_barcode">Kod produktu musi składać się z samych cyfr</string>
     <string name="invalid_tax_value">Musisz wybrać wartość podatku</string>
     <string name="invalid_price">Musisz podać poprawną cenę</string>
 

@@ -90,14 +90,8 @@ class ProductAdapter(val context: Context) : BaseAdapter() {
 
     private val productDao = ProductDao(ProductDatabase(context).getDao(Product::class.java))
     private val priceEntryDao = PriceEntryDao(ProductDatabase(context).getDao(PriceEntry::class.java))
-    private val products: List<Product> = joinProductWithPrices(productDao.findAll(), priceEntryDao.findAll())
+    private val products: List<Product> = productDao.findAll()
     private var filteredProducts: List<Product> = products
-
-    private fun joinProductWithPrices(products: List<Product>, prices: List<PriceEntry>): MutableList<Product> {
-        return products
-                .map { Product(it.id, it.name, it.barcode, it.priceNet, it.taxRate, prices.filter { p -> p.productId == it.id }) }
-                .toMutableList()
-    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -111,9 +105,11 @@ class ProductAdapter(val context: Context) : BaseAdapter() {
         val product = filteredProducts[position]
         productName.text = product.name
         productBarcode.text = product.barcode
-        val mostRecentPrice = product.entries.last()
+
+        val mostRecentPrice = priceEntryDao.findByProductId(product.id!!).last()
         productPrice.text = "${formatPrice(mostRecentPrice.price)} zł"
         addedAt.text = formatDate(mostRecentPrice.date)
+
         return rowView
     }
 
