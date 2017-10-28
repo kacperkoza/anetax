@@ -1,6 +1,7 @@
 package com.nostra.koza.anetax
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -15,8 +16,7 @@ import butterknife.OnClick
 import com.basgeekball.awesomevalidation.AwesomeValidation
 import com.basgeekball.awesomevalidation.ValidationStyle
 import com.basgeekball.awesomevalidation.utility.RegexTemplate
-import com.nostra.koza.anetax.util.toast
-
+import com.nostra.koza.anetax.util.shortToast
 
 class AddProductFragment : Fragment() {
 
@@ -27,14 +27,11 @@ class AddProductFragment : Fragment() {
 
     private lateinit var awesomeValidation: AwesomeValidation
 
-    private lateinit var productDatabase: ProductDatabase
     private lateinit var productDao: ProductDao
+    private lateinit var priceEntryDao: PriceEntryDao
 
     companion object {
-        const val DIGITS_IN_BARCODE = 10
-        const val TAX_FIVE_PERCENT = 0.05
-        const val TAX_EIGHT_PERCENT = 0.08
-        const val TAX_TWENTY_THREE_PERCENT = 0.23
+        const val TAG = "AddProductFragment"
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -48,38 +45,55 @@ class AddProductFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         awesomeValidation = AwesomeValidation(ValidationStyle.BASIC)
         awesomeValidation.addValidation(activity, R.id.product_name_et, RegexTemplate.NOT_EMPTY, R.string.invalid_product_name)
-        awesomeValidation.addValidation(activity, R.id.barcode_et, "[0-9]{$DIGITS_IN_BARCODE}", R.string.invalid_barcode)
+        awesomeValidation.addValidation(activity, R.id.barcode_et, "[0-9]+", R.string.invalid_barcode)
         awesomeValidation.addValidation(activity, R.id.price_et, "([0-9]+.[0-9]{1,2})|[0-9]+", R.string.invalid_price)
-        productDatabase = ProductDatabase(context)
-        productDao = ProductDao(productDatabase.getDao(Product::class.java))
+        val productDb = ProductDatabase(context)
+        productDao = ProductDao(productDb.getDao(Product::class.java))
+        priceEntryDao = PriceEntryDao(productDb.getDao(PriceEntry::class.java))
     }
 
     @OnClick(R.id.add_button)
     fun addNewProduct() {
-        Log.i("OnClick", "Adding new product")
-        val product = if (awesomeValidation.validate()) {
-            Product(
-                    null,
-                    productNameText.text.toString(),
-                    barcodeText.text.toString(),
-                    priceText.text.toString().toDouble(),
-                    when (taxRadioGroup.checkedRadioButtonId) {
-                        R.id.tax_five_percent -> TAX_FIVE_PERCENT
-                        R.id.tax_eight_percent -> TAX_EIGHT_PERCENT
-                        R.id.tax_twenty_three_percent -> TAX_TWENTY_THREE_PERCENT
-                        else -> throw RuntimeException("Invalid tax rate!")
-                    })
-        } else {
-            return
-        }
-        Log.i("OnClick", "Adding new product = $product")
-        productDao.add(product)
-        toast(context, getString(R.string.successfully_added_new_product))
+        if (!awesomeValidation.validate()) return
+
+        val taxRate = getTaxRate()
+        val priceNet = priceText.text.toString().toDouble()
+        val product = productDao.add(Product(null,
+                productNameText.text.toString(),
+                barcodeText.text.toString(),
+                priceNet,
+                taxRate))
+        val priceWithVat = priceNet * (1 + taxRate.rate)
+        val priceWithMarginAndVat = priceWithVat * (1 + Product.MARGIN_RATE)
+        priceEntryDao.add(PriceEntry(null, product.id!!, priceWithMarginAndVat))
+        shortToast(context, getString(R.string.successfully_added_new_product))
         Log.i("OnClick", "Product added, list = ${productDao.findAll()}")
-        clearForm()
+        Log.i("OnClick", "Product prices, list = ${priceEntryDao.findAll()}")
+        clearAddProductForm()
     }
 
-    private fun clearForm() {
+    private fun getTaxRate(): TaxRate = when (taxRadioGroup.checkedRadioButtonId) {
+        R.id.tax_five_percent -> TaxRate.FIVE_PERCENT
+        R.id.tax_eight_percent -> TaxRate.EIGHT_PERCENT
+        R.id.tax_twenty_three_percent -> TaxRate.TWENTY_THREE_PERCENT
+        else -> throw RuntimeException("Invalid tax rate!")
+    }
+
+    @OnClick(R.id.add_fab)
+    fun scanProduct() {
+        startActivityForResult(Intent(activity, BarcodeScanActivity::class.java), BarcodeScanActivity.SCAN_RESULT_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == BarcodeScanActivity.SCAN_RESULT_CODE) {
+            val scanResult = data!!.getSerializableExtra(BarcodeScanActivity.SCAN_RESULT_KEY) as ScanResult
+            Log.i(TAG, scanResult.toString())
+            barcodeText.text = scanResult.barcode
+        }
+    }
+
+    private fun clearAddProductForm() {
         productNameText.text = ""
         barcodeText.text = ""
         barcodeText.text = ""

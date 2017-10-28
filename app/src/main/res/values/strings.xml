@@ -7,7 +7,8 @@
     <string name="title_list">Lista</string>
     <string name="title_export">Eksportuj</string>
 
-    <!-- add new product -->
+    <!-- add new priceList -->
+    <string name="title_add_product">Nowy produkt</string>
     <string name="product_name">Nazwa produktu</string>
     <string name="five_percent">5%</string>
     <string name="eight_percent">8%</string>
@@ -22,6 +23,15 @@
 
     <string name="successfully_added_new_product">Pomyślnie dodano nowy produkt.</string>
 
+
+    <!-- priceList lsit -->
+    <string name="title_product_list">A Ty czego szukasz?</string>
+    <string name="find_by_barcode_or_name">Nazwa produktu lub kod kreskowy</string>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="open">Otwórz</string>
+    <string name="no_products">Brak produktów</string>
+    <string name="added_on"> dodany w dniu </string>
+
 
 </resources>

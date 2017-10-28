@@ -14,10 +14,12 @@ class ProductDatabase(context: Context) : OrmLiteSqliteOpenHelper(context, "prod
 
     override fun onCreate(database: SQLiteDatabase?, connectionSource: ConnectionSource?) {
         TableUtils.createTableIfNotExists(connectionSource, Product::class.java)
+        TableUtils.createTableIfNotExists(connectionSource, PriceEntry::class.java)
     }
 
     override fun onUpgrade(database: SQLiteDatabase?, connectionSource: ConnectionSource?, oldVersion: Int, newVersion: Int) {
         TableUtils.dropTable<Product, Any>(connectionSource, Product::class.java, true)
+        TableUtils.dropTable<PriceEntry, Any>(connectionSource, PriceEntry::class.java, true)
         onCreate(database, connectionSource)
     }
 

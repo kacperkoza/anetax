@@ -6,7 +6,7 @@ import android.widget.Toast
 /**
  * Created by kacper.koza on 21/10/2017.
  */
-fun toast(context: Context, msg: String) = makeToast(context, msg, Toast.LENGTH_SHORT)
+fun shortToast(context: Context, msg: String) = makeToast(context, msg, Toast.LENGTH_SHORT)
 
 fun longToast(context: Context, msg: String) = makeToast(context, msg, Toast.LENGTH_LONG)
 

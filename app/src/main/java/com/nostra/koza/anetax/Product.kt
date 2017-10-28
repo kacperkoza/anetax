@@ -2,11 +2,11 @@ package com.nostra.koza.anetax
 
 import com.j256.ormlite.dao.Dao
 import com.j256.ormlite.field.DatabaseField
+import com.j256.ormlite.table.DatabaseTable
+import org.joda.time.DateTime
+import java.io.Serializable
 
-/**
- * Created by kacper.koza on 19/10/2017.
- */
-
+@DatabaseTable(tableName = "products")
 data class Product(
 
         @DatabaseField(generatedId = true)
@@ -22,28 +22,62 @@ data class Product(
         val priceNet: Double,
 
         @DatabaseField
-        val tax: Double
-) {
-    constructor() : this(null, "", "", 0.0, 0.0)
+        val taxRate: TaxRate,
 
-    val priceGross: Double = priceNet * tax
-    val priceMargin = priceGross * MARGIN_RATE
+        val entries: List<PriceEntry> = emptyList()
+): Serializable {
+    constructor() : this(null, "", "", 0.0, TaxRate.EIGHT_PERCENT)
 
     companion object {
         const val MARGIN_RATE = 0.25
     }
 }
 
+enum class TaxRate(val rate: Double) {
+    FIVE_PERCENT(0.05),
+    EIGHT_PERCENT(0.08),
+    TWENTY_THREE_PERCENT(0.23)
+}
+
+
+data class PriceEntry(
+        @DatabaseField(generatedId = true)
+        val id: Int?,
+
+        @DatabaseField
+        val productId: Int,
+
+        @DatabaseField
+        val price: Double,
+
+        @DatabaseField
+        val date: DateTime = DateTime()
+) {
+
+    constructor(): this(null, 0, 0.0, DateTime.now())
+}
+
+class PriceEntryDao(private val dao: Dao<PriceEntry, Int>) {
+
+    fun add(priceEntry: PriceEntry): PriceEntry = dao.createIfNotExists(priceEntry)
+
+    fun findAll(): List<PriceEntry> = dao.queryForAll()
+
+    fun deleteById(id: Int) = dao.deleteById(id)
+
+}
+
 class ProductDao(private val dao: Dao<Product, Int>) {
 
-    fun add(product: Product) = dao.create(product)
+    fun add(product: Product): Product = dao.createIfNotExists(product)
 
-    fun delete(product: Product) = dao.delete(product)
+    fun deleteById(productId: Int) = dao.deleteById(productId)
 
     fun findAll(): List<Product> = dao.queryForAll()
 
-    fun findByBarcode(barcode: String): List<Product> = findAll().filter { it.barcode == barcode }
+    fun findByBarcodeOrName(query: String): List<Product> =
+            findAll().filter { it.barcode.contains(query) || containsQueryIgnoringCase(it.name, query) }.distinct()
 
-    fun findByProductName(productName: String): List<Product> = findAll().filter { it.name.toLowerCase().contains(productName.toLowerCase()) }
+    private fun containsQueryIgnoringCase(name: String, phrase: String) = name.toLowerCase().contains(phrase.toLowerCase())
 
 }

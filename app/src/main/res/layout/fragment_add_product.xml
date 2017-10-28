@@ -2,9 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     android:orientation="vertical"
-    tools:context="com.nostra.koza.anetax.AddProductFragment"
-    android:background="#FFFFFF">
+    tools:context="com.nostra.koza.anetax.AddProductFragment">
 
     <EditText
         android:id="@+id/product_name_et"
@@ -25,12 +25,12 @@
         android:inputType="number" />
 
     <RadioGroup
+        android:id="@+id/tax_radio_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:id="@+id/tax_radio_group"
-        android:gravity="center_horizontal"
         android:checkedButton="@+id/tax_five_percent"
+        android:gravity="center_horizontal"
         android:orientation="horizontal">
 
         <RadioButton
@@ -70,8 +70,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:inputType="numberDecimal"
         android:background="@drawable/add_button_shape"
+        android:inputType="numberDecimal"
         android:text="@string/title_add" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_photo_camera_white_24dp" />
 
 </LinearLayout>
