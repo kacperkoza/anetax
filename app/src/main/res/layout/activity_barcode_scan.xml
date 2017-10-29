@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.nostra.koza.anetax.BarcodeScanActivity">
+    tools:context="com.nostra.koza.anetax.activity.BarcodeScanActivity">
 
 </android.support.constraint.ConstraintLayout>

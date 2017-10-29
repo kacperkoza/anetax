@@ -1,4 +1,4 @@
-package com.nostra.koza.anetax
+package com.nostra.koza.anetax.fragment
 
 import android.content.Context
 import android.content.Intent
@@ -16,6 +16,9 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import butterknife.OnLongClick
 import com.afollestad.materialdialogs.MaterialDialog
+import com.nostra.koza.anetax.*
+import com.nostra.koza.anetax.activity.BarcodeScanActivity
+import com.nostra.koza.anetax.database.*
 import com.nostra.koza.anetax.util.Keypad
 import com.nostra.koza.anetax.util.formatDate
 import com.nostra.koza.anetax.util.formatPrice
@@ -59,11 +62,11 @@ class ProductDetailsFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Keypad.hideKeypad(activity!!)
+        Keypad.hide(activity!!)
         dialogFactory = DialogFactory(context!!)
         productDao = ProductDao(ProductDatabase(context!!).getDao(Product::class.java))
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        priceListAdapter = PriceListAdapter(context!!, product.id!!)
+        priceListAdapter = PriceListAdapter(context!!, product)
         listView.adapter = priceListAdapter
         listView.setMenuCreator({ menu -> menu.addMenuItem(SwipeMenuItemFactory.deleteItem(context!!)) })
         listView.setOnMenuItemClickListener { position, _, index ->
@@ -143,10 +146,10 @@ class ProductDetailsFragment : Fragment() {
     }
 }
 
-class PriceListAdapter(val context: Context, val productId: Int) : BaseAdapter() {
+class PriceListAdapter(val context: Context, val product: Product) : BaseAdapter() {
 
     private val priceEntryDao: PriceEntryDao = PriceEntryDao(ProductDatabase(context).getDao(PriceEntry::class.java))
-    private var priceEntries: List<PriceEntry> = priceEntryDao.findByProductId(productId)
+    private var priceEntries: List<PriceEntry> = priceEntryDao.findByProductId(product.id!!)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -176,7 +179,7 @@ class PriceListAdapter(val context: Context, val productId: Int) : BaseAdapter()
             return false
         }
         priceEntryDao.deleteById(getItemId(position).toInt())
-        priceEntries = priceEntryDao.findByProductId(productId)
+        priceEntries = priceEntryDao.findByProductId(product.id!!)
         notifyDataSetChanged()
         return true
     }
@@ -188,8 +191,10 @@ class PriceListAdapter(val context: Context, val productId: Int) : BaseAdapter()
     private fun toast(id: Int) = shortToast(context, context.getString(id))
 
     fun addNewPrice(newPrice: String) {
-        priceEntryDao.add(PriceEntry(null, priceEntries[0].productId, newPrice.toDouble()))
-        priceEntries = priceEntryDao.findByProductId(productId)
+        priceEntryDao.add(
+                PriceEntry(null, product.id!!, PriceCalculator.calculateMarginPrice(newPrice.toDouble(), product.taxRate))
+        )
+        priceEntries = priceEntryDao.findByProductId(product.id)
         notifyDataSetChanged()
     }
 }

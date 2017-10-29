@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.nostra.koza.anetax.MainActivity">
+    tools:context="com.nostra.koza.anetax.activity.MainActivity">
 
     <FrameLayout
         android:id="@+id/content"

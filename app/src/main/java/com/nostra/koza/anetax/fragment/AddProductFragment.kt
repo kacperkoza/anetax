@@ -1,4 +1,4 @@
-package com.nostra.koza.anetax
+package com.nostra.koza.anetax.fragment
 
 
 import android.content.Intent
@@ -16,6 +16,10 @@ import butterknife.OnClick
 import com.basgeekball.awesomevalidation.AwesomeValidation
 import com.basgeekball.awesomevalidation.ValidationStyle
 import com.basgeekball.awesomevalidation.utility.RegexTemplate
+import com.nostra.koza.anetax.activity.BarcodeScanActivity
+import com.nostra.koza.anetax.PriceCalculator
+import com.nostra.koza.anetax.R
+import com.nostra.koza.anetax.database.*
 import com.nostra.koza.anetax.util.Keypad
 import com.nostra.koza.anetax.util.shortToast
 
@@ -44,7 +48,7 @@ class AddProductFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Keypad.hideKeypad(activity!!)
+        Keypad.hide(activity!!)
         awesomeValidation = AwesomeValidation(ValidationStyle.BASIC)
         awesomeValidation.addValidation(activity, R.id.product_name_et, RegexTemplate.NOT_EMPTY, R.string.invalid_product_name)
         awesomeValidation.addValidation(activity, R.id.barcode_et, "[0-9]{0,}", R.string.invalid_barcode)
@@ -71,7 +75,7 @@ class AddProductFragment : Fragment() {
         Log.i("OnClick", "Product added, list = ${productDao.findAll()}")
         Log.i("OnClick", "Product prices, list = ${priceEntryDao.findAll()}")
         clearAddProductForm()
-        Keypad.hideKeypad(activity!!)
+        Keypad.hide(activity!!)
         productNameText.requestFocus()
     }
 
@@ -106,6 +110,6 @@ class AddProductFragment : Fragment() {
     }
 
     @OnClick(R.id.background_layout)
-    fun hideKeypad() = Keypad.hideKeypad(activity!!)
+    fun hideKeypad() = Keypad.hide(activity!!)
 
 }

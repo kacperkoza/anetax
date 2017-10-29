@@ -1,10 +1,11 @@
-package com.nostra.koza.anetax
+package com.nostra.koza.anetax.activity
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.google.zxing.Result
+import com.nostra.koza.anetax.database.ScanResult
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 
 class BarcodeScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {

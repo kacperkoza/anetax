@@ -1,5 +1,8 @@
 package com.nostra.koza.anetax
 
+import com.nostra.koza.anetax.database.Product
+import com.nostra.koza.anetax.database.TaxRate
+
 /**
  * Created by kacper.koza on 28/10/2017.
  */

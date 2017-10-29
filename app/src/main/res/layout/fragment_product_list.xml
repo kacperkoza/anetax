@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical"
-    tools:context="com.nostra.koza.anetax.ProductListFragment">
+    tools:context="com.nostra.koza.anetax.fragment.ProductListFragment">
 
     <EditText
         android:layout_width="match_parent"

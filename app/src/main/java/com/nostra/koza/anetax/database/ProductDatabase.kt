@@ -1,4 +1,4 @@
-package com.nostra.koza.anetax
+package com.nostra.koza.anetax.database
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -6,11 +6,8 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper
 import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.table.TableUtils
 
-/**
- * Created by kacper.koza on 21/10/2017.
- */
-class ProductDatabase(context: Context) : OrmLiteSqliteOpenHelper(context, "product.db", null, 1) {
 
+class ProductDatabase(context: Context) : OrmLiteSqliteOpenHelper(context, "product.db", null, 1) {
 
     override fun onCreate(database: SQLiteDatabase?, connectionSource: ConnectionSource?) {
         TableUtils.createTableIfNotExists(connectionSource, Product::class.java)

@@ -10,7 +10,7 @@ import android.view.inputmethod.InputMethodManager
  */
 object Keypad {
 
-    fun hideKeypad(activity: Activity) {
+    fun hide(activity: Activity) {
         val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         var view = activity.currentFocus
         if (view == null) {

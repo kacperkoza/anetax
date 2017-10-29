@@ -1,4 +1,4 @@
-package com.nostra.koza.anetax
+package com.nostra.koza.anetax.activity
 
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
@@ -8,6 +8,9 @@ import android.support.v7.app.AppCompatActivity
 import android.view.WindowManager
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.nostra.koza.anetax.R
+import com.nostra.koza.anetax.fragment.AddProductFragment
+import com.nostra.koza.anetax.fragment.ProductListFragment
 import com.nostra.koza.anetax.util.shortToast
 
 class MainActivity : AppCompatActivity() {

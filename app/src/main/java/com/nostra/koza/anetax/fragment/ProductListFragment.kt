@@ -1,4 +1,4 @@
-package com.nostra.koza.anetax
+package com.nostra.koza.anetax.fragment
 
 import android.content.Context
 import android.database.DataSetObserver
@@ -14,6 +14,9 @@ import android.widget.EditText
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.nostra.koza.anetax.R
+import com.nostra.koza.anetax.SwipeMenuItemFactory
+import com.nostra.koza.anetax.database.*
 import com.nostra.koza.anetax.util.Keypad
 import com.nostra.koza.anetax.util.formatDate
 import com.nostra.koza.anetax.util.formatPrice
@@ -36,7 +39,7 @@ class ProductListFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Keypad.hideKeypad(activity!!)
+        Keypad.hide(activity!!)
         productAdapter = ProductAdapter(context!!)
         productAdapter.registerDataSetObserver(object : DataSetObserver() {
             override fun onChanged() {
