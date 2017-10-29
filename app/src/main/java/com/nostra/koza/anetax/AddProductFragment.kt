@@ -35,21 +35,21 @@ class AddProductFragment : Fragment() {
         const val TAG = "AddProductFragment"
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_add_product, container, false)
+        val view = inflater.inflate(R.layout.fragment_add_product, container, false)
         ButterKnife.bind(this, view)
         return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Keypad.hideKeypad(activity)
+        Keypad.hideKeypad(activity!!)
         awesomeValidation = AwesomeValidation(ValidationStyle.BASIC)
         awesomeValidation.addValidation(activity, R.id.product_name_et, RegexTemplate.NOT_EMPTY, R.string.invalid_product_name)
         awesomeValidation.addValidation(activity, R.id.barcode_et, "[0-9]{0,}", R.string.invalid_barcode)
         awesomeValidation.addValidation(activity, R.id.price_et, "([0-9]+.[0-9]{1,2})|[0-9]+", R.string.invalid_price)
-        val productDb = ProductDatabase(context)
+        val productDb = ProductDatabase(context!!)
         productDao = ProductDao(productDb.getDao(Product::class.java))
         priceEntryDao = PriceEntryDao(productDb.getDao(PriceEntry::class.java))
     }
@@ -67,11 +67,11 @@ class AddProductFragment : Fragment() {
                 taxRate))
 
         priceEntryDao.add(PriceEntry(null, product.id!!, PriceCalculator.calculateMarginPrice(priceNet, taxRate)))
-        shortToast(context, getString(R.string.successfully_added_new_product))
+        shortToast(context!!, getString(R.string.successfully_added_new_product))
         Log.i("OnClick", "Product added, list = ${productDao.findAll()}")
         Log.i("OnClick", "Product prices, list = ${priceEntryDao.findAll()}")
         clearAddProductForm()
-        Keypad.hideKeypad(activity)
+        Keypad.hideKeypad(activity!!)
         productNameText.requestFocus()
     }
 
@@ -106,6 +106,6 @@ class AddProductFragment : Fragment() {
     }
 
     @OnClick(R.id.background_layout)
-    fun hideKeypad() = Keypad.hideKeypad(activity)
+    fun hideKeypad() = Keypad.hideKeypad(activity!!)
 
 }

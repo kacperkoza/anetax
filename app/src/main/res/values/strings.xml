@@ -32,6 +32,14 @@
     <string name="added_on"> dodany w dniu </string>
     <string name="you_cant_delete_last_position">Nie możesz usunąć ostatniej pozycji</string>
     <string name="you_cant_delete_last_price">Nie możesz usunąć ostatniej ceny</string>
+    <string name="scanned_code">Nowy kod kreskowy</string>
+    <string name="is_code_proper">Czy kod kreskowy zgadza się z tym na produkcie?</string>
+    <string name="cancel">Anuluj</string>
+    <string name="enter_new_product_name">Podaj nową nazwę produktu</string>
+    <string name="price_list">Lista cen</string>
+    <string name="add_price">Dodaj cenę</string>
+    <string name="new_price">Nowa cena</string>
+    <string name="enter_new_price">Podaj nową cenę</string>
 
 
 </resources>

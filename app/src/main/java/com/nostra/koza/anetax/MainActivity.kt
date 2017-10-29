@@ -6,15 +6,19 @@ import android.support.design.widget.BottomNavigationView.OnNavigationItemSelect
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.WindowManager
+import butterknife.BindView
+import butterknife.ButterKnife
 import com.nostra.koza.anetax.util.shortToast
 
 class MainActivity : AppCompatActivity() {
 
+    @BindView(R.id.navigation) lateinit var bottomNavigation: BottomNavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val navigation = findViewById(R.id.navigation) as BottomNavigationView
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        ButterKnife.bind(this)
+        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         beginFragmentTransaction(AddProductFragment())
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
@@ -30,15 +34,18 @@ class MainActivity : AppCompatActivity() {
             R.id.navigation_add -> {
                 beginFragmentTransaction(AddProductFragment())
                 setActionBarTitle(R.string.title_add_product)
+                onSupportNavigateUp()
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_list -> {
                 beginFragmentTransaction(ProductListFragment())
                 setActionBarTitle(R.string.title_product_list)
+                onSupportNavigateUp()
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_export -> {
                 shortToast(this, "Not implemented yet...")
+                onSupportNavigateUp()
                 return@OnNavigationItemSelectedListener true
             }
         }

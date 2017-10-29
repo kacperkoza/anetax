@@ -8,9 +8,9 @@ import com.baoyz.swipemenulistview.SwipeMenuItem
 /**
  * Created by kacper.koza on 28/10/2017.
  */
-object SwipeMenuItemBuilder {
+object SwipeMenuItemFactory {
 
-    fun buildDeleteItem(context: Context): SwipeMenuItem {
+    fun deleteItem(context: Context): SwipeMenuItem {
         val deleteItem = SwipeMenuItem(context)
         deleteItem.background = ColorDrawable(Color.RED)
         deleteItem.width = 180
@@ -18,7 +18,7 @@ object SwipeMenuItemBuilder {
         return deleteItem
     }
 
-    fun buildOpenItem(context: Context): SwipeMenuItem {
+    fun openItem(context: Context): SwipeMenuItem {
         val openItem = SwipeMenuItem(context)
         openItem.background = ColorDrawable(Color.GRAY)
         openItem.width = 180

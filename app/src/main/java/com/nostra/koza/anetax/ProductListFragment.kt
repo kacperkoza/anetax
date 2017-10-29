@@ -27,17 +27,17 @@ class ProductListFragment : Fragment() {
 
     private lateinit var productAdapter: ProductAdapter
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_product_list, container, false)
+        val view = inflater.inflate(R.layout.fragment_product_list, container, false)
         ButterKnife.bind(this, view)
         return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Keypad.hideKeypad(activity)
-        productAdapter = ProductAdapter(context)
+        Keypad.hideKeypad(activity!!)
+        productAdapter = ProductAdapter(context!!)
         productAdapter.registerDataSetObserver(object : DataSetObserver() {
             override fun onChanged() {
                 noProductsText.visibility = if (productAdapter.isEmpty()) View.VISIBLE else View.GONE
@@ -45,8 +45,8 @@ class ProductListFragment : Fragment() {
         })
 
         listView.setMenuCreator({ swipeMenu ->
-            swipeMenu.addMenuItem(SwipeMenuItemBuilder.buildOpenItem(context))
-            swipeMenu.addMenuItem(SwipeMenuItemBuilder.buildDeleteItem(context))
+            swipeMenu.addMenuItem(SwipeMenuItemFactory.openItem(context!!))
+            swipeMenu.addMenuItem(SwipeMenuItemFactory.deleteItem(context!!))
         })
 
         listView.setOnMenuItemClickListener { position, _, index ->
@@ -66,7 +66,7 @@ class ProductListFragment : Fragment() {
     }
 
     private fun openProductDetailsFragment(position: Int): Boolean {
-        fragmentManager
+        fragmentManager!!
                 .beginTransaction()
                 .replace(R.id.content, ProductDetailsFragment.newInstance(productAdapter.getItem(position) as Product))
                 .addToBackStack(null)
@@ -92,22 +92,22 @@ class ProductAdapter(val context: Context) : BaseAdapter() {
 
     private val productDao = ProductDao(ProductDatabase(context).getDao(Product::class.java))
     private val priceEntryDao = PriceEntryDao(ProductDatabase(context).getDao(PriceEntry::class.java))
-    private var products: List<Product> = productDao.findAll()
-    private var filteredProducts: List<Product> = products
+    private var filteredProducts: List<Product> = productDao.findAll()
 
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         var holder: ViewHolder
         var view = convertView
 
-        if (convertView != null) {
-            holder = convertView.tag as ViewHolder
+        if (view != null) {
+            holder = view.tag as ViewHolder
         } else {
             val inflater = LayoutInflater.from(context)
             view = inflater.inflate(R.layout.product_row, parent, false)
             holder = ViewHolder(view)
             view.tag = holder
         }
+
         val product = getItem(position) as Product
         holder.productName.text = product.name
         holder.barcode.text = product.barcode
@@ -126,16 +126,14 @@ class ProductAdapter(val context: Context) : BaseAdapter() {
     override fun getCount(): Int = this.filteredProducts.size
 
     fun filterByText(text: String) {
-        filteredProducts = products.filter { it.name.contains(text.toLowerCase()) || it.barcode.contains(text) }
-//        this.filteredProducts = productDao.findByBarcodeOrName(text)
+        filteredProducts = productDao.findByBarcodeOrName(text)
         notifyDataSetChanged()
     }
 
     fun deleteProductAndPricesById(productId: Int): Boolean {
         productDao.deleteById(productId)
         priceEntryDao.deleteWhereProductId(productId)
-        filteredProducts = products
-
+        filteredProducts = filteredProducts.filter { it.id != productId }
         notifyDataSetChanged()
         return true
     }

@@ -89,4 +89,8 @@ class ProductDao(private val dao: Dao<Product, Int>) {
 
     private fun containsQueryIgnoringCase(name: String, phrase: String) = name.toLowerCase().contains(phrase.toLowerCase())
 
+    fun update(product: Product) {
+        dao.update(product)
+    }
+
 }
