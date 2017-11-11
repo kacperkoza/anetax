@@ -146,7 +146,6 @@ class ProductDetailsFragment : Fragment() {
                 val oldPriceEntry = priceListAdapter.getItem(position)
                 val modifiedPrice = oldPriceEntry.price.copy(priceMargin = input.toString().toDouble())
                 priceListAdapter.editPrice(oldPriceEntry.copy(price = modifiedPrice))
-                listView.adapter = PriceListAdapter(context!!, product)
             }
         })
         return false

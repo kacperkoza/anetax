@@ -42,6 +42,9 @@ class AddProductFragment : Fragment() {
 
     companion object {
         const val TAG = "AddProductFragment"
+        const val ONLY_NUMBERS_PATTERN = "[0-9]{0,}"
+        const val DECIMAL_FORMAT_PATTERN = "([0-9]+.[0-9]{1,2})|[0-9]+"
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -56,9 +59,9 @@ class AddProductFragment : Fragment() {
         Keypad.hide(activity!!)
         awesomeValidation = AwesomeValidation(ValidationStyle.BASIC)
         awesomeValidation.addValidation(activity, R.id.product_name_et, RegexTemplate.NOT_EMPTY, R.string.invalid_product_name)
-        awesomeValidation.addValidation(activity, R.id.barcode_et, "[0-9]{0,}", R.string.invalid_barcode)
-        awesomeValidation.addValidation(activity, R.id.price_et, "([0-9]+.[0-9]{1,2})|[0-9]+", R.string.invalid_price)
-        awesomeValidation.addValidation(activity, R.id.margin_price_et, "([0-9]+.[0-9]{1,2})|[0-9]+", R.string.invalid_price)
+        awesomeValidation.addValidation(activity, R.id.barcode_et, ONLY_NUMBERS_PATTERN, R.string.invalid_barcode)
+        awesomeValidation.addValidation(activity, R.id.price_et, DECIMAL_FORMAT_PATTERN , R.string.invalid_price)
+        awesomeValidation.addValidation(activity, R.id.margin_price_et, DECIMAL_FORMAT_PATTERN, R.string.invalid_price)
 
         val productDb = ProductDatabase(context!!)
         productDao = ProductDao(productDb.getDao(Product::class.java))

@@ -19,18 +19,18 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Netto: "
-                android:textSize="20sp" />
+                android:text="@string/net"
+                android:textSize="12sp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Brutto: "
-                android:textSize="20sp" />
+                android:text="@string/gross"
+                android:textSize="12sp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Margin: "
-                android:textSize="20sp" />
+                android:text="@string/margin"
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -44,21 +44,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="10,00"
-                android:textSize="20sp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/price_gross_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="10,00"
-                android:textSize="20sp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/price_margin_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="10,00"
-                android:textSize="20sp" />
+                android:textStyle="bold"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <TextView
@@ -66,10 +67,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-
             android:layout_gravity="center"
             android:text="27-10-2017"
-            android:textSize="20sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 
 

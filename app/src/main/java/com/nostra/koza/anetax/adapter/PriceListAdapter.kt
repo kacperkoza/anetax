@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import butterknife.BindView
+import butterknife.ButterKnife
 import com.nostra.koza.anetax.PriceCalculator
 import com.nostra.koza.anetax.R
 import com.nostra.koza.anetax.database.PriceEntry
@@ -22,19 +24,24 @@ class PriceListAdapter(val context: Context, val product: Product) : BaseAdapter
     private var priceEntries: List<PriceEntry> = priceEntryDao.findByProductId(product.id!!)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val rowView = inflater.inflate(R.layout.price_row, parent, false)
+        val holder: ViewHolder
+        var view = convertView
 
-        val priceNet: TextView = rowView.findViewById(R.id.price_net_text)
-        val priceGross: TextView = rowView.findViewById(R.id.price_gross_text)
-        val priceMargin: TextView = rowView.findViewById(R.id.price_margin_text)
-        val date: TextView = rowView.findViewById(R.id.date)
+        if (view != null) {
+            holder = view.tag as ViewHolder
+        } else {
+            val inflater = LayoutInflater.from(context)
+            view = inflater.inflate(R.layout.price_row, parent, false)
+            holder = ViewHolder(view)
+            view.tag = holder
+        }
         val priceEntry = priceEntries[position]
-        priceNet.text = formatPrice(priceEntry.price.priceNet)
-        priceGross.text = formatPrice(priceEntry.price.priceGross)
-        priceMargin.text = formatPrice(priceEntry.price.priceMargin)
-        date.text = formatDate(priceEntry.date)
-        return rowView
+        holder.priceNet.text= formatPrice(priceEntry.price.priceNet)
+        holder.priceGross.text = formatPrice(priceEntry.price.priceGross)
+        holder.priceMargin.text = formatPrice(priceEntry.price.priceMargin)
+        holder.date.text = formatDate(priceEntry.date)
+
+        return view!!
     }
 
     override fun getItemId(position: Int): Long = priceEntries.get(position).id!!.toLong()
@@ -76,5 +83,16 @@ class PriceListAdapter(val context: Context, val product: Product) : BaseAdapter
         priceEntryDao.update(modifiedPrice)
         priceEntries = priceEntryDao.findByProductId(product.id!!)
         notifyDataSetChanged()
+    }
+
+    class ViewHolder(val view: View) {
+        @BindView(R.id.price_net_text) lateinit var priceNet: TextView
+        @BindView(R.id.price_gross_text) lateinit var priceGross: TextView
+        @BindView(R.id.price_margin_text) lateinit var priceMargin: TextView
+        @BindView(R.id.date) lateinit var date: TextView
+
+        init {
+            ButterKnife.bind(this, view)
+        }
     }
 }

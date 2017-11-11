@@ -43,6 +43,9 @@
     <string name="optional_field">To pole jest opcjonalne</string>
     <string name="price_margin">Ostateczna cena</string>
     <string name="new_margin_price">Nowa cena</string>
+    <string name="net">Netto:</string>
+    <string name="margin">Marża:</string>
+    <string name="gross">Brutto:</string>
 
 
 </resources>
