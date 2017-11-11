@@ -6,6 +6,8 @@ class PriceEntryDao(private val dao: Dao<PriceEntry, Int>) {
 
     fun add(priceEntry: PriceEntry): PriceEntry = dao.createIfNotExists(priceEntry)
 
+    fun update(priceEntry: PriceEntry): Int = dao.update(priceEntry)
+
     fun findAll(): List<PriceEntry> = dao.queryForAll()
 
     fun deleteById(id: Int) = dao.deleteById(id)

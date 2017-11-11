@@ -16,12 +16,10 @@ class ProductDao(private val dao: Dao<Product, Int>) {
     fun findById(productId: Int) = dao.queryForId(productId)
 
     fun findByBarcodeOrName(query: String): List<Product> =
-            findAll().filter { it.barcode?.barcode?.contains(query) ?: false || containsQueryIgnoringCase(it.name, query) }.distinct()
+            findAll().filter { it.barcode?.barcodeText?.contains(query) ?: false || containsQueryIgnoringCase(it.name, query) }.distinct()
 
     private fun containsQueryIgnoringCase(name: String, phrase: String) = name.toLowerCase().contains(phrase.toLowerCase())
 
-    fun update(product: Product) {
-        dao.update(product)
-    }
+    fun update(product: Product) = dao.update(product)
 
 }

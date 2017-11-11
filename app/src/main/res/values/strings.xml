@@ -42,6 +42,7 @@
     <string name="enter_new_price">Podaj nową cenę</string>
     <string name="optional_field">To pole jest opcjonalne</string>
     <string name="price_margin">Ostateczna cena</string>
+    <string name="new_margin_price">Nowa cena</string>
 
 
 </resources>

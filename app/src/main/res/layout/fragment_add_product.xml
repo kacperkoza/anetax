@@ -75,8 +75,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/optional_field"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="2dp" />
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp" />
 
         <EditText
             android:id="@+id/margin_price_et"

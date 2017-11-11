@@ -39,4 +39,14 @@ class DialogFactory(val context: Context) {
                 .show()
     }
 
+    fun editMarginPrice(callback: MaterialDialog.InputCallback) {
+        MaterialDialog.Builder(context)
+                .title(R.string.new_margin_price)
+                .content(R.string.enter_new_price)
+                .inputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
+                .input("", "", callback)
+                .negativeText(R.string.cancel)
+                .show()
+    }
+
 }

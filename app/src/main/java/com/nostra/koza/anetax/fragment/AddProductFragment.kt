@@ -13,6 +13,7 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
+import butterknife.OnTextChanged
 import com.basgeekball.awesomevalidation.AwesomeValidation
 import com.basgeekball.awesomevalidation.ValidationStyle
 import com.basgeekball.awesomevalidation.utility.RegexTemplate
@@ -37,7 +38,7 @@ class AddProductFragment : Fragment() {
     private lateinit var productDao: ProductDao
     private lateinit var priceEntryDao: PriceEntryDao
 
-    private var barcode: Barcode? = null
+    private var scannedBarcode: Barcode? = null
 
     companion object {
         const val TAG = "AddProductFragment"
@@ -57,27 +58,11 @@ class AddProductFragment : Fragment() {
         awesomeValidation.addValidation(activity, R.id.product_name_et, RegexTemplate.NOT_EMPTY, R.string.invalid_product_name)
         awesomeValidation.addValidation(activity, R.id.barcode_et, "[0-9]{0,}", R.string.invalid_barcode)
         awesomeValidation.addValidation(activity, R.id.price_et, "([0-9]+.[0-9]{1,2})|[0-9]+", R.string.invalid_price)
+        awesomeValidation.addValidation(activity, R.id.margin_price_et, "([0-9]+.[0-9]{1,2})|[0-9]+", R.string.invalid_price)
+
         val productDb = ProductDatabase(context!!)
         productDao = ProductDao(productDb.getDao(Product::class.java))
         priceEntryDao = PriceEntryDao(productDb.getDao(PriceEntry::class.java))
-    }
-
-    @OnClick(R.id.add_button)
-    fun addNewProduct() {
-        if (!awesomeValidation.validate()) return
-        val product = productDao.add(
-                Product(null,
-                        productNameText.text.toString(),
-                        barcode,
-                        getTaxRate()))
-
-        priceEntryDao.add(PriceEntry(null, product.id!!, calculatePrice().copy(priceMargin = marginPriceEt.text.toString().toDouble())))
-        shortToast(context!!, getString(R.string.successfully_added_new_product))
-        Log.i("OnClick", "Product added, list = ${productDao.findAll()}")
-        Log.i("OnClick", "Product prices, list = ${priceEntryDao.findAll()}")
-        clearAddProductForm()
-        Keypad.hide(activity!!)
-        productNameText.requestFocus()
     }
 
     @OnClick(R.id.add_fab)
@@ -91,9 +76,36 @@ class AddProductFragment : Fragment() {
         if (requestCode == BarcodeScanActivity.SCAN_RESULT_CODE) {
             val scanResult = data.getSerializableExtra(BarcodeScanActivity.SCAN_RESULT_KEY) as Barcode
             Log.i(TAG, scanResult.toString())
-            barcodeText.text = scanResult.barcode
-            barcode = scanResult
+            barcodeText.text = scanResult.barcodeText
+            scannedBarcode = scanResult
         }
+    }
+
+    @OnClick(R.id.add_button)
+    fun addNewProduct() {
+        if (!awesomeValidation.validate()) return
+        addProductAndPriceEntry()
+        clearAndNotify()
+    }
+
+    private fun addProductAndPriceEntry() {
+        val enteredBarcode = getBarcode()
+        val product = productDao.add(
+                Product(null,
+                        getProductName(),
+                        scannedBarcode ?: enteredBarcode,
+                        getTaxRate()))
+        priceEntryDao.add(
+                PriceEntry(null,
+                        product.id!!,
+                        calculatePrice().copy(priceMargin = marginPriceEt.text.toString().toDouble())))
+    }
+
+    private fun clearAndNotify() {
+        shortToast(context!!, getString(R.string.successfully_added_new_product))
+        clearAddProductForm()
+        Keypad.hide(activity!!)
+        productNameText.requestFocus()
     }
 
     private fun clearAddProductForm() {
@@ -101,24 +113,32 @@ class AddProductFragment : Fragment() {
         barcodeText.text = ""
         barcodeText.text = ""
         priceText.text = ""
+        marginPriceEt.text = ""
         taxRadioGroup.check(R.id.tax_five_percent)
     }
 
-    @OnClick(R.id.background_layout)
-    fun hideKeypad() = Keypad.hide(activity!!)
-
-    @OnClick(R.id.tax_five_percent, R.id.tax_eight_percent, R.id.tax_twenty_three_percent, R.id.price_et)
-    fun onTaxChange() {
-        calculatePrice()
+    @OnClick(R.id.tax_five_percent, R.id.tax_eight_percent, R.id.tax_twenty_three_percent)
+    fun onTaxChanged() {
+        setNewMarginPrice()
     }
 
-    fun calculatePrice(): Price {
-        val price = PriceCalculator.calculateMarginPrice(getNetPrice(), getTaxRate())
-        marginPriceEt.text = formatPrice(price.priceMargin)
-        return price
+    @OnTextChanged(R.id.price_et)
+    fun onPriceChanged() {
+        setNewMarginPrice()
     }
+
+    private fun setNewMarginPrice() {
+        if (priceText.text.isEmpty()) return
+        marginPriceEt.text = formatPrice(calculatePrice().priceMargin)
+    }
+
+    private fun calculatePrice(): Price = PriceCalculator.calculateMarginPrice(getNetPrice(), getTaxRate())
 
     private fun getNetPrice() = priceText.text.toString().toDouble()
+
+    private fun getBarcode() = if (!barcodeText.text.isEmpty()) Barcode(barcodeText.text.toString(), null, null) else null
+
+    private fun getProductName() = productNameText.text.toString()
 
     private fun getTaxRate(): TaxRate = when (taxRadioGroup.checkedRadioButtonId) {
         R.id.tax_five_percent -> TaxRate.FIVE_PERCENT
@@ -126,5 +146,8 @@ class AddProductFragment : Fragment() {
         R.id.tax_twenty_three_percent -> TaxRate.TWENTY_THREE_PERCENT
         else -> throw RuntimeException("Invalid tax rate!")
     }
+
+    @OnClick(R.id.background_layout)
+    fun hideKeypad() = Keypad.hide(activity!!)
 
 }
