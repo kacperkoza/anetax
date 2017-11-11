@@ -1,5 +1,6 @@
 package com.nostra.koza.anetax.database
 
+import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
 import java.io.Serializable
@@ -13,18 +14,12 @@ data class Product(
         @DatabaseField
         val name: String,
 
-        @DatabaseField
-        val barcode: String,
-
-        @DatabaseField
-        val priceNet: Double,
+        @DatabaseField(dataType = DataType.SERIALIZABLE)
+        val barcode: Barcode?,
 
         @DatabaseField
         val taxRate: TaxRate
-): Serializable {
-    constructor() : this(null, "", "", 0.0, TaxRate.EIGHT_PERCENT)
 
-    companion object {
-        const val MARGIN_RATE = 0.25
-    }
+): Serializable {
+    constructor() : this(null, "", Barcode("", "", 0), TaxRate.FIVE_PERCENT)
 }

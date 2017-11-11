@@ -16,11 +16,12 @@ import butterknife.OnClick
 import com.basgeekball.awesomevalidation.AwesomeValidation
 import com.basgeekball.awesomevalidation.ValidationStyle
 import com.basgeekball.awesomevalidation.utility.RegexTemplate
-import com.nostra.koza.anetax.activity.BarcodeScanActivity
 import com.nostra.koza.anetax.PriceCalculator
 import com.nostra.koza.anetax.R
+import com.nostra.koza.anetax.activity.BarcodeScanActivity
 import com.nostra.koza.anetax.database.*
 import com.nostra.koza.anetax.util.Keypad
+import com.nostra.koza.anetax.util.formatPrice
 import com.nostra.koza.anetax.util.shortToast
 
 class AddProductFragment : Fragment() {
@@ -29,11 +30,14 @@ class AddProductFragment : Fragment() {
     @BindView(R.id.barcode_et) lateinit var barcodeText: TextView
     @BindView(R.id.tax_radio_group) lateinit var taxRadioGroup: RadioGroup
     @BindView(R.id.price_et) lateinit var priceText: TextView
+    @BindView(R.id.margin_price_et) lateinit var marginPriceEt: TextView
 
     private lateinit var awesomeValidation: AwesomeValidation
 
     private lateinit var productDao: ProductDao
     private lateinit var priceEntryDao: PriceEntryDao
+
+    private var barcode: Barcode? = null
 
     companion object {
         const val TAG = "AddProductFragment"
@@ -61,29 +65,19 @@ class AddProductFragment : Fragment() {
     @OnClick(R.id.add_button)
     fun addNewProduct() {
         if (!awesomeValidation.validate()) return
+        val product = productDao.add(
+                Product(null,
+                        productNameText.text.toString(),
+                        barcode,
+                        getTaxRate()))
 
-        val taxRate = getTaxRate()
-        val priceNet = priceText.text.toString().toDouble()
-        val product = productDao.add(Product(null,
-                productNameText.text.toString(),
-                barcodeText.text.toString(),
-                priceNet,
-                taxRate))
-
-        priceEntryDao.add(PriceEntry(null, product.id!!, PriceCalculator.calculateMarginPrice(priceNet, taxRate)))
+        priceEntryDao.add(PriceEntry(null, product.id!!, calculatePrice().copy(priceMargin = marginPriceEt.text.toString().toDouble())))
         shortToast(context!!, getString(R.string.successfully_added_new_product))
         Log.i("OnClick", "Product added, list = ${productDao.findAll()}")
         Log.i("OnClick", "Product prices, list = ${priceEntryDao.findAll()}")
         clearAddProductForm()
         Keypad.hide(activity!!)
         productNameText.requestFocus()
-    }
-
-    private fun getTaxRate(): TaxRate = when (taxRadioGroup.checkedRadioButtonId) {
-        R.id.tax_five_percent -> TaxRate.FIVE_PERCENT
-        R.id.tax_eight_percent -> TaxRate.EIGHT_PERCENT
-        R.id.tax_twenty_three_percent -> TaxRate.TWENTY_THREE_PERCENT
-        else -> throw RuntimeException("Invalid tax rate!")
     }
 
     @OnClick(R.id.add_fab)
@@ -95,9 +89,10 @@ class AddProductFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         data ?: return
         if (requestCode == BarcodeScanActivity.SCAN_RESULT_CODE) {
-            val scanResult = data.getSerializableExtra(BarcodeScanActivity.SCAN_RESULT_KEY) as ScanResult
+            val scanResult = data.getSerializableExtra(BarcodeScanActivity.SCAN_RESULT_KEY) as Barcode
             Log.i(TAG, scanResult.toString())
             barcodeText.text = scanResult.barcode
+            barcode = scanResult
         }
     }
 
@@ -111,5 +106,25 @@ class AddProductFragment : Fragment() {
 
     @OnClick(R.id.background_layout)
     fun hideKeypad() = Keypad.hide(activity!!)
+
+    @OnClick(R.id.tax_five_percent, R.id.tax_eight_percent, R.id.tax_twenty_three_percent, R.id.price_et)
+    fun onTaxChange() {
+        calculatePrice()
+    }
+
+    fun calculatePrice(): Price {
+        val price = PriceCalculator.calculateMarginPrice(getNetPrice(), getTaxRate())
+        marginPriceEt.text = formatPrice(price.priceMargin)
+        return price
+    }
+
+    private fun getNetPrice() = priceText.text.toString().toDouble()
+
+    private fun getTaxRate(): TaxRate = when (taxRadioGroup.checkedRadioButtonId) {
+        R.id.tax_five_percent -> TaxRate.FIVE_PERCENT
+        R.id.tax_eight_percent -> TaxRate.EIGHT_PERCENT
+        R.id.tax_twenty_three_percent -> TaxRate.TWENTY_THREE_PERCENT
+        else -> throw RuntimeException("Invalid tax rate!")
+    }
 
 }

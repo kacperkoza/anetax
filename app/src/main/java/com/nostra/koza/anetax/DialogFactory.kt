@@ -9,7 +9,7 @@ import com.afollestad.materialdialogs.MaterialDialog
  */
 class DialogFactory(val context: Context) {
 
-    fun editBarcode(barcode: String = "", callback: MaterialDialog.InputCallback) {
+    fun editBarcode(barcode: String, callback: MaterialDialog.InputCallback) {
         MaterialDialog.Builder(context)
                 .title(R.string.scanned_code)
                 .content(R.string.is_code_proper)

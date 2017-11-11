@@ -83,7 +83,7 @@ class ProductDetailsFragment : Fragment() {
 
     private fun fillViews() {
         productName.text = product.name
-        barcode.text = product.barcode
+        barcode.text = product.barcode?.barcode ?: ""
     }
 
     @OnClick(R.id.add_fab)
@@ -94,23 +94,23 @@ class ProductDetailsFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (BarcodeScanActivity.SCAN_RESULT_CODE != requestCode) return
         data ?: return
-        val result: ScanResult = data.getSerializableExtra(BarcodeScanActivity.SCAN_RESULT_KEY) as ScanResult
-        editBarcodeDialog(result.barcode)
+        val result: Barcode = data.getSerializableExtra(BarcodeScanActivity.SCAN_RESULT_KEY) as Barcode
+        editBarcodeDialog(result)
     }
 
     @OnLongClick(R.id.product_barcode)
     fun editBarcode(): Boolean {
-        editBarcodeDialog("")
+        editBarcodeDialog(Barcode("","",0))
         return true
     }
 
-    private fun editBarcodeDialog(newBarcode: String) {
-        dialogFactory.editBarcode(newBarcode, MaterialDialog.InputCallback { dialog, input ->
+    private fun editBarcodeDialog(newBarcode: Barcode) {
+        dialogFactory.editBarcode(newBarcode.barcode, MaterialDialog.InputCallback { dialog, input ->
             if (!input.matches(Regex("[0-9]{0,}"))) {
                 shortToast(context!!, R.string.invalid_barcode)
                 dialog.dismiss()
             } else {
-                updateProduct(product.copy(barcode = input.toString()))
+                updateProduct(product.copy(barcode = newBarcode))
             }
         })
     }
@@ -133,6 +133,7 @@ class ProductDetailsFragment : Fragment() {
         dialogFactory.newPrice(MaterialDialog.InputCallback {dialog, input ->
             if (!input.matches(Regex("([0-9]+.[0-9]{1,2})|[0-9]+"))) {
                 shortToast(context!!, R.string.invalid_price)
+                dialog.dismiss()
             } else {
                 priceListAdapter.addNewPrice(input.toString())
             }
@@ -158,7 +159,7 @@ class PriceListAdapter(val context: Context, val product: Product) : BaseAdapter
         val price: TextView = rowView.findViewById(R.id.price)
         val date: TextView = rowView.findViewById(R.id.date)
         val priceEntry = priceEntries[position]
-        price.text = formatPrice(priceEntry.price)
+        price.text = formatPrice(priceEntry.price.priceMargin)
         date.text = formatDate(priceEntry.date)
         return rowView
     }

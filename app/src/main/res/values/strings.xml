@@ -40,6 +40,8 @@
     <string name="add_price">Dodaj cenę</string>
     <string name="new_price">Nowa cena</string>
     <string name="enter_new_price">Podaj nową cenę</string>
+    <string name="optional_field">To pole jest opcjonalne</string>
+    <string name="price_margin">Ostateczna cena</string>
 
 
 </resources>

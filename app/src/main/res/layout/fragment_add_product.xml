@@ -69,6 +69,22 @@
             android:layout_margin="10dp"
             android:ems="10"
             android:hint="@string/price_net"
+            android:imeOptions="actionNext"
+            android:inputType="numberDecimal" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/optional_field"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="2dp" />
+
+        <EditText
+            android:id="@+id/margin_price_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:ems="10"
+            android:hint="@string/price_margin"
             android:imeOptions="actionDone"
             android:inputType="numberDecimal" />
 
@@ -80,6 +96,7 @@
             android:background="@drawable/add_button_shape"
             android:inputType="numberDecimal"
             android:text="@string/title_add" />
+
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/add_fab"

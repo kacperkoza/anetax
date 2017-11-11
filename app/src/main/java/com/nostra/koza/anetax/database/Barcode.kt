@@ -2,7 +2,7 @@ package com.nostra.koza.anetax.database
 
 import java.io.Serializable
 
-data class ScanResult(
+data class Barcode(
         val barcode: String,
         val barcodeName: String,
         val barcodeOrdinal: Int

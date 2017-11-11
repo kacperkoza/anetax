@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.google.zxing.Result
-import com.nostra.koza.anetax.database.ScanResult
+import com.nostra.koza.anetax.database.Barcode
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 
 class BarcodeScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
@@ -41,7 +41,7 @@ class BarcodeScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler 
     override fun handleResult(rawResult: Result) {
         Log.d(TAG, "handleResult = $rawResult")
         val intent = Intent()
-        intent.putExtra(SCAN_RESULT_KEY, ScanResult(rawResult.text, rawResult.barcodeFormat.name, rawResult.barcodeFormat.ordinal))
+        intent.putExtra(SCAN_RESULT_KEY, Barcode(rawResult.text, rawResult.barcodeFormat.name, rawResult.barcodeFormat.ordinal))
         setResult(SCAN_RESULT_CODE, intent)
         finish()
     }
