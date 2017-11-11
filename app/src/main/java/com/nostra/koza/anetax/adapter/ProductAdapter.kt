@@ -35,7 +35,7 @@ class ProductAdapter(val context: Context) : BaseAdapter() {
 
         val product = getItem(position) as Product
         holder.productName.text = product.name
-        holder.barcode.text = product.barcode?.barcodeText ?: ""
+        holder.barcode.text = product.writeBarcodeToString()
 
         val mostRecentPrice = priceEntryDao.findByProductId(product.id!!).last()
         holder.price.text = "${formatPrice(mostRecentPrice.price.priceMargin)} zł"

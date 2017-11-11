@@ -22,4 +22,13 @@ data class Product(
 
 ): Serializable {
     constructor() : this(null, "", Barcode("", "", 0), TaxRate.FIVE_PERCENT)
+
+    fun writeBarcodeToString(): String {
+        barcode ?: return ""
+        if (barcode.barcodeOrdinal == null && barcode.barcodeName == null) {
+            return barcode.barcodeText
+        } else {
+            return "${barcode.barcodeText} - ${barcode.barcodeName} - ${barcode.barcodeOrdinal}"
+        }
+    }
 }

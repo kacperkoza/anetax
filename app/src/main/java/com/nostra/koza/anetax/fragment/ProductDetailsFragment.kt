@@ -4,9 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import butterknife.*
 import com.afollestad.materialdialogs.MaterialDialog
@@ -53,6 +51,7 @@ class ProductDetailsFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_product_details, container, false)
         product = arguments!!.get(PRODUCT_KEY) as Product
         ButterKnife.bind(this, view)
+        setHasOptionsMenu(true)
         return view
     }
 
@@ -79,10 +78,22 @@ class ProductDetailsFragment : Fragment() {
 
     private fun fillViews() {
         productName.text = product.name
-        barcode.text = product.barcode?.barcodeText ?: ""
+        barcode.text = product.writeBarcodeToString()
     }
 
-    @OnClick(R.id.add_fab)
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater!!.inflate(R.menu.action_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item!!.itemId) {
+            R.id.scan -> {
+                scanProduct()
+            }
+        }
+        return true
+    }
+
     fun scanProduct() {
         startActivityForResult(Intent(activity, BarcodeScanActivity::class.java), BarcodeScanActivity.SCAN_RESULT_CODE)
     }

@@ -96,15 +96,6 @@
             android:background="@drawable/add_button_shape"
             android:inputType="numberDecimal"
             android:text="@string/title_add" />
-
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/add_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_photo_camera_white_24dp" />
     </LinearLayout>
 
 

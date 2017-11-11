@@ -5,9 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.RadioGroup
 import android.widget.TextView
 import butterknife.BindView
@@ -51,6 +49,7 @@ class AddProductFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_add_product, container, false)
         ButterKnife.bind(this, view)
+        setHasOptionsMenu(true)
         return view
     }
 
@@ -60,7 +59,7 @@ class AddProductFragment : Fragment() {
         awesomeValidation = AwesomeValidation(ValidationStyle.BASIC)
         awesomeValidation.addValidation(activity, R.id.product_name_et, RegexTemplate.NOT_EMPTY, R.string.invalid_product_name)
         awesomeValidation.addValidation(activity, R.id.barcode_et, ONLY_NUMBERS_PATTERN, R.string.invalid_barcode)
-        awesomeValidation.addValidation(activity, R.id.price_et, DECIMAL_FORMAT_PATTERN , R.string.invalid_price)
+        awesomeValidation.addValidation(activity, R.id.price_et, DECIMAL_FORMAT_PATTERN, R.string.invalid_price)
         awesomeValidation.addValidation(activity, R.id.margin_price_et, DECIMAL_FORMAT_PATTERN, R.string.invalid_price)
 
         val productDb = ProductDatabase(context!!)
@@ -68,7 +67,19 @@ class AddProductFragment : Fragment() {
         priceEntryDao = PriceEntryDao(productDb.getDao(PriceEntry::class.java))
     }
 
-    @OnClick(R.id.add_fab)
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater!!.inflate(R.menu.action_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item!!.itemId) {
+            R.id.scan -> {
+                scanProduct()
+            }
+        }
+        return true
+    }
+
     fun scanProduct() {
         startActivityForResult(Intent(activity, BarcodeScanActivity::class.java), BarcodeScanActivity.SCAN_RESULT_CODE)
     }
