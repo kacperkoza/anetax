@@ -13,7 +13,7 @@ import com.nostra.koza.anetax.database.*
 import com.nostra.koza.anetax.util.formatDate
 import com.nostra.koza.anetax.util.formatPrice
 
-class ProductAdapter(val context: Context) : BaseAdapter() {
+class productListAdapter(val context: Context) : BaseAdapter() {
 
     private val productDao = ProductDao(ProductDatabase(context).getDao(Product::class.java))
     private val priceEntryDao = PriceEntryDao(ProductDatabase(context).getDao(PriceEntry::class.java))

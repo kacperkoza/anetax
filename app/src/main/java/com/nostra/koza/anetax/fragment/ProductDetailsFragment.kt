@@ -121,7 +121,7 @@ class ProductDetailsFragment : Fragment() {
                 shortToast(context!!, R.string.invalid_barcode)
                 dialog.dismiss()
             } else {
-                updateProduct(product.copy(barcode = newBarcode))
+                updateProduct(product.copy(barcode = Barcode(input.toString(), null, null)))
             }
         })
     }

@@ -12,7 +12,7 @@ import butterknife.ButterKnife
 import butterknife.OnTextChanged
 import com.nostra.koza.anetax.R
 import com.nostra.koza.anetax.SwipeMenuItemFactory
-import com.nostra.koza.anetax.adapter.ProductAdapter
+import com.nostra.koza.anetax.adapter.productListAdapter
 import com.nostra.koza.anetax.database.Product
 import com.nostra.koza.anetax.util.Keypad
 import kotlinx.android.synthetic.main.fragment_product_list.*
@@ -22,7 +22,7 @@ class ProductListFragment : Fragment() {
 
     @BindView(R.id.no_products_text) lateinit var noProductsText: TextView
 
-    private lateinit var productAdapter: ProductAdapter
+    private lateinit var productListAdapter: productListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -34,10 +34,10 @@ class ProductListFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         Keypad.hide(activity!!)
-        productAdapter = ProductAdapter(context!!)
-        productAdapter.registerDataSetObserver(object : DataSetObserver() {
+        productListAdapter = productListAdapter(context!!)
+        productListAdapter.registerDataSetObserver(object : DataSetObserver() {
             override fun onChanged() {
-                noProductsText.visibility = if (productAdapter.isEmpty()) View.VISIBLE else View.GONE
+                noProductsText.visibility = if (productListAdapter.isEmpty()) View.VISIBLE else View.GONE
             }
         })
         listView.setMenuCreator({ swipeMenu ->
@@ -47,22 +47,21 @@ class ProductListFragment : Fragment() {
         listView.setOnMenuItemClickListener { position, _, index ->
             when (index) {
                 1 -> {
-                    val productId = (productAdapter.getItem(position) as Product).id!!
-                    productAdapter.deleteProductAndPricesById(productId)
+                    productListAdapter.deleteProductAndPricesById(productListAdapter.getItemId(position).toInt())
                 }
                 0 -> openProductDetailsFragment(position)
                 else -> true
             }
         }
         listView.setOnItemClickListener { _, _, position, _ -> openProductDetailsFragment(position) }
-        listView.adapter = productAdapter
-        productAdapter.notifyDataSetChanged()
+        listView.adapter = productListAdapter
+        productListAdapter.notifyDataSetChanged()
     }
 
     private fun openProductDetailsFragment(position: Int): Boolean {
         fragmentManager!!
                 .beginTransaction()
-                .replace(R.id.content, ProductDetailsFragment.newInstance(productAdapter.getItem(position) as Product))
+                .replace(R.id.content, ProductDetailsFragment.newInstance(productListAdapter.getItem(position) as Product))
                 .addToBackStack(null)
                 .commit()
         return true
@@ -70,7 +69,7 @@ class ProductListFragment : Fragment() {
 
     @OnTextChanged(R.id.search_et, callback = OnTextChanged.Callback.TEXT_CHANGED)
     fun searchByText(s: CharSequence?) {
-        productAdapter.filterByText(s.toString())
+        productListAdapter.filterByText(s.toString())
     }
 
 }

@@ -30,7 +30,7 @@ class ExportFragment : Fragment() {
     private lateinit var productDao: ProductDao
     private lateinit var priceEntryDao: PriceEntryDao
 
-    private lateinit var adapter: FileListAdapter
+    private lateinit var fileListAdapter: FileListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -45,13 +45,13 @@ class ExportFragment : Fragment() {
         val db = ProductDatabase(context!!)
         priceEntryDao = PriceEntryDao(db.getDao(PriceEntry::class.java))
         productDao = ProductDao(db.getDao(Product::class.java))
-        adapter = FileListAdapter(context!!)
-        adapter.registerDataSetObserver(object : DataSetObserver() {
+        fileListAdapter = FileListAdapter(context!!)
+        fileListAdapter.registerDataSetObserver(object : DataSetObserver() {
             override fun onChanged() {
-                noFilesTv.visibility = if (adapter.isEmpty()) View.VISIBLE else View.GONE
+                noFilesTv.visibility = if (fileListAdapter.isEmpty()) View.VISIBLE else View.GONE
             }
         })
-        listView.adapter = adapter
+        listView.adapter = fileListAdapter
         listView.setMenuCreator({ swipeMenu ->
             swipeMenu.addMenuItem(SwipeMenuItemFactory.sendItem(context!!))
             swipeMenu.addMenuItem(SwipeMenuItemFactory.deleteItem(context!!))
@@ -59,18 +59,18 @@ class ExportFragment : Fragment() {
         listView.setOnMenuItemClickListener { position, _, index ->
             when (index) {
                 1 -> {
-                    adapter.deleteFile(position)
+                    fileListAdapter.deleteFile(position)
                     true
                 }
                 0 -> {
-                    val file = adapter.getItem(position) as File
+                    val file = fileListAdapter.getItem(position) as File
                     sendEmailWithAttachment(file)
                     true
                 }
                 else -> true
             }
         }
-        adapter.refresh()
+        fileListAdapter.refresh()
         Keypad.hide(activity!!)
     }
 
@@ -82,7 +82,7 @@ class ExportFragment : Fragment() {
         emailIntent.putExtra(Intent.EXTRA_EMAIL, to)
         emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject")
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, file.nameWithoutExtension)
         startActivity(emailIntent)
     }
 
@@ -110,9 +110,12 @@ class ExportFragment : Fragment() {
 
     private fun exportToFile(strategy: WriteStrategy) {
         val exporter = ExcelFileExporter(strategy)
-        exporter.export(getPath(), productDao.findAll(), priceEntryDao.findAll())
+        exporter.export(
+                getPath(),
+                productDao.findAll(),
+                priceEntryDao.findAll())
         shortToast(context!!, R.string.successful_export)
-        adapter.refresh()
+        fileListAdapter.refresh()
     }
 
     private fun getPath() = context!!.filesDir.absolutePath + "/"
