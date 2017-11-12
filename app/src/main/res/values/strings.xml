@@ -47,6 +47,11 @@
     <string name="margin">Marża:</string>
     <string name="gross">Brutto:</string>
     <string name="title_files_export">Eksport plików</string>
+    <string name="no_files">Brak plików</string>
+    <string name="succesfully_deleted_file">Pomyslnie usunięto plik</string>
+    <string name="delete_file_problem">Nie udało się usunąc pliku</string>
+    <string name="export">eksport</string>
+    <string name="successful_export">Pomyslnie wyeksportowano dane</string>
 
 
 </resources>

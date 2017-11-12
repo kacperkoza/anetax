@@ -1,44 +1,36 @@
 package com.nostra.koza.anetax.fragment
 
-import android.content.ContentProvider
-import android.content.ContentValues
 import android.content.Intent
-import android.database.Cursor
-import android.net.Uri
+import android.database.DataSetObserver
 import android.os.Bundle
-import android.os.Environment
 import android.support.v4.app.Fragment
 import android.support.v4.content.FileProvider
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.TextView
+import butterknife.BindView
 import butterknife.ButterKnife
-import butterknife.OnClick
 import com.nostra.koza.anetax.R
+import com.nostra.koza.anetax.SwipeMenuItemFactory
+import com.nostra.koza.anetax.adapter.FileListAdapter
 import com.nostra.koza.anetax.database.*
-import com.nostra.koza.anetax.exporter.ExcelExporter
-import com.nostra.koza.anetax.exporter.strategy.WriteLastPriceStrategy
+import com.nostra.koza.anetax.exporter.ExcelFileExporter
+import com.nostra.koza.anetax.exporter.strategy.AllPriceStrategy
+import com.nostra.koza.anetax.exporter.strategy.WriteStrategy
+import com.nostra.koza.anetax.exporter.strategy.LastPriceStrategy
 import com.nostra.koza.anetax.util.Keypad
+import com.nostra.koza.anetax.util.shortToast
+import kotlinx.android.synthetic.main.fragment_export.*
 import java.io.File
-import android.widget.Toast
-import com.nostra.koza.anetax.activity.MainActivity
-import android.os.Environment.getExternalStorageDirectory
-import org.apache.poi.hssf.usermodel.HSSFRichTextString
-import org.apache.poi.hssf.usermodel.HSSFCell
-import org.apache.poi.hssf.record.aggregates.RowRecordsAggregate.createRow
-import org.apache.poi.hssf.usermodel.HSSFRow
-import org.apache.poi.hssf.usermodel.HSSFSheet
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import java.io.FileOutputStream
-import java.io.IOException
 
 
 class ExportFragment : Fragment() {
 
-    private lateinit var exporter: ExcelExporter
+    @BindView(R.id.no_files_text) lateinit var noFilesTv: TextView
+
     private lateinit var productDao: ProductDao
     private lateinit var priceEntryDao: PriceEntryDao
+
+    private lateinit var adapter: FileListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -49,105 +41,80 @@ class ExportFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        setHasOptionsMenu(true)
         val db = ProductDatabase(context!!)
         priceEntryDao = PriceEntryDao(db.getDao(PriceEntry::class.java))
         productDao = ProductDao(db.getDao(Product::class.java))
+        adapter = FileListAdapter(context!!)
+        adapter.registerDataSetObserver(object : DataSetObserver() {
+            override fun onChanged() {
+                noFilesTv.visibility = if (adapter.isEmpty()) View.VISIBLE else View.GONE
+            }
+        })
+        listView.adapter = adapter
+        listView.setMenuCreator({ swipeMenu ->
+            swipeMenu.addMenuItem(SwipeMenuItemFactory.sendItem(context!!))
+            swipeMenu.addMenuItem(SwipeMenuItemFactory.deleteItem(context!!))
+        })
+        listView.setOnMenuItemClickListener { position, _, index ->
+            when (index) {
+                1 -> {
+                    adapter.deleteFile(position)
+                    true
+                }
+                0 -> {
+                    val file = adapter.getItem(position) as File
+                    sendEmailWithAttachment(file)
+                    true
+                }
+                else -> true
+            }
+        }
+        adapter.refresh()
         Keypad.hide(activity!!)
     }
 
-    @OnClick(R.id.export_all_btn)
-    fun exportAll() {
-        Log.i("", "")
-    }
-
-    @OnClick(R.id.export_for_employees_btn)
-    fun exportForEmployees() {
-//        exporter = ExcelExporter(WriteLastPriceStrategy())
-//        val f = "${context!!.filesDir}/file.xls"
-//        exporter.export(f, productDao.findAll(), priceEntryDao.findAll())
-//        Log.i("after save", File("/storage/sdcard/").list().joinToString { "$it, " })
-//
-//        val file = context!!.filesDir.listFiles().last()
-//        if (!file.exists()) {
-//            file.mkdir()
-//        }
-//        val path: Uri = Uri.fromFile(file)
-//        val p = FileProvider.getUriForFile(context!!, "com.nostra.koza.anetax", file)
-        val workbook = HSSFWorkbook()
-        val firstSheet = workbook.createSheet("Sheet No 1")
-        val secondSheet = workbook.createSheet("Sheet No 2")
-        val rowA = firstSheet.createRow(0)
-        val cellA = rowA.createCell(0)
-        cellA.setCellValue(HSSFRichTextString("Sheet One"))
-        val rowB = secondSheet.createRow(0)
-        val cellB = rowB.createCell(0)
-        cellB.setCellValue(HSSFRichTextString("Sheet two"))
-        var fos: FileOutputStream? = null
-
-
-        val str_path = context!!.filesDir.absolutePath + "/"
-        var file = File(str_path, "pliczek" + ".xls")
-        fos = FileOutputStream(file)
-        workbook.write(fos)
-        fos.flush()
-        fos.close()
-//            Toast.makeText(this@MainActivity, "Excel Sheet Generated", Toast.LENGTH_SHORT).show()
-
-
-        val p = FileProvider.getUriForFile(context!!, "com.nostra.koza.anetax", file)
-
-        sendEmail(p)
-    }
-
-    fun sendEmail(file: Uri) {
-//        val Root = Environment.getExternalStorageDirectory()
-//
-//        val path = Root.absolutePath + "/plik2.csv"
+    private fun sendEmailWithAttachment(file: File) {
+        val uri = FileProvider.getUriForFile(context!!, "com.nostra.koza.anetax", file)
         val emailIntent = Intent(Intent.ACTION_SEND)
-        // set the type to 'email'
         emailIntent.type = "vnd.android.cursor.dir/email"
         val to = arrayOf("kkoza11@gmail.com")
         emailIntent.putExtra(Intent.EXTRA_EMAIL, to)
-        emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-        // the attachment
-        emailIntent.putExtra(Intent.EXTRA_STREAM, file)
-        // the mail subject
+        emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject")
         startActivity(emailIntent)
     }
 
-    private fun getFileDirectory(): String {
-        val directory = context!!.filesDir.path
-        Log.i("Directory", directory)
-        Log.i("roo", File(".").list().joinToString { "$it, " })
-        return directory
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater!!.inflate(R.menu.export_menu, menu)
     }
 
-}
-
-class Provider : ContentProvider() {
-    override fun insert(uri: Uri?, values: ContentValues?): Uri {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item!!.itemId) {
+            R.id.export -> {
+                createFileWithLastPrice()
+                createFileWithAllPrices()
+            }
+        }
+        return true
     }
 
-    override fun query(uri: Uri?, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun createFileWithLastPrice() {
+        exportToFile(LastPriceStrategy())
+     }
+
+    private fun createFileWithAllPrices() {
+        exportToFile(AllPriceStrategy())
     }
 
-    override fun onCreate(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun exportToFile(strategy: WriteStrategy) {
+        val exporter = ExcelFileExporter(strategy)
+        exporter.export(getPath(), productDao.findAll(), priceEntryDao.findAll())
+        shortToast(context!!, R.string.successful_export)
+        adapter.refresh()
     }
 
-    override fun update(uri: Uri?, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    private fun getPath() = context!!.filesDir.absolutePath + "/"
 
-    override fun delete(uri: Uri?, selection: String?, selectionArgs: Array<out String>?): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getType(uri: Uri?): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 }

@@ -28,4 +28,12 @@ object SwipeMenuItemFactory {
         return openItem
     }
 
+    fun sendItem(context: Context): SwipeMenuItem {
+        val sendItem = SwipeMenuItem(context)
+        sendItem.background = ColorDrawable(Color.DKGRAY)
+        sendItem.width = 180
+        sendItem.setIcon(R.drawable.ic_send_white_24dp)
+        return sendItem
+    }
+
 }

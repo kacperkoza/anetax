@@ -70,7 +70,11 @@ class ProductDetailsFragment : Fragment() {
                     priceListAdapter.removePriceElement(position)
                     true
                 }
-                else -> true
+                else -> {
+                    activity?.onBackPressed()
+                    (activity as AppCompatActivity).onSupportNavigateUp()
+                    true
+                }
             }
         }
         fillViews()
@@ -82,7 +86,7 @@ class ProductDetailsFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater!!.inflate(R.menu.action_menu, menu)
+        inflater!!.inflate(R.menu.scan_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
