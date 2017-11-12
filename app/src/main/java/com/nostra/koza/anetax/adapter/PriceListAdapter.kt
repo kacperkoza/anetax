@@ -94,5 +94,7 @@ class PriceListAdapter(val context: Context, val product: Product) : BaseAdapter
         init {
             ButterKnife.bind(this, view)
         }
+
     }
+
 }

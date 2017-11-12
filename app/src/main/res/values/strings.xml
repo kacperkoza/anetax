@@ -46,6 +46,7 @@
     <string name="net">Netto:</string>
     <string name="margin">Marża:</string>
     <string name="gross">Brutto:</string>
+    <string name="title_files_export">Eksport plików</string>
 
 
 </resources>

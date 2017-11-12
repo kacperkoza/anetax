@@ -10,8 +10,8 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.nostra.koza.anetax.R
 import com.nostra.koza.anetax.fragment.AddProductFragment
+import com.nostra.koza.anetax.fragment.ExportFragment
 import com.nostra.koza.anetax.fragment.ProductListFragment
-import com.nostra.koza.anetax.util.shortToast
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,7 +47,8 @@ class MainActivity : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_export -> {
-                shortToast(this, "Not implemented yet...")
+                beginFragmentTransaction(ExportFragment())
+                setActionBarTitle(R.string.title_files_export)
                 onSupportNavigateUp()
                 return@OnNavigationItemSelectedListener true
             }
