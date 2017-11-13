@@ -22,12 +22,3 @@ data class PriceEntry(
 ) {
     constructor(): this(null, 0, Price(0.0, 0.0, 0.0), DateTime.now())
 }
-
-data class Price(
-        val priceNet: Double,
-        val priceGross: Double,
-        val priceMargin: Double
-) : Serializable
-
-
-

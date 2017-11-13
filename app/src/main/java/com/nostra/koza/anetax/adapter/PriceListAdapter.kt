@@ -36,7 +36,7 @@ class PriceListAdapter(val context: Context, val product: Product) : BaseAdapter
             view.tag = holder
         }
         val priceEntry = priceEntries[position]
-        holder.priceNet.text= formatPrice(priceEntry.price.priceNet)
+        holder.priceNet.text = formatPrice(priceEntry.price.priceNet)
         holder.priceGross.text = formatPrice(priceEntry.price.priceGross)
         holder.priceMargin.text = formatPrice(priceEntry.price.priceMargin)
         holder.date.text = formatDate(priceEntry.date)

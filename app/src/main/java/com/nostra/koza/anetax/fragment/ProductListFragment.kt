@@ -12,9 +12,9 @@ import butterknife.ButterKnife
 import butterknife.OnTextChanged
 import com.nostra.koza.anetax.R
 import com.nostra.koza.anetax.SwipeMenuItemFactory
-import com.nostra.koza.anetax.adapter.productListAdapter
+import com.nostra.koza.anetax.adapter.ProductListAdapter
 import com.nostra.koza.anetax.database.Product
-import com.nostra.koza.anetax.util.Keypad
+import com.nostra.koza.anetax.util.hide
 import kotlinx.android.synthetic.main.fragment_product_list.*
 
 
@@ -22,7 +22,7 @@ class ProductListFragment : Fragment() {
 
     @BindView(R.id.no_products_text) lateinit var noProductsText: TextView
 
-    private lateinit var productListAdapter: productListAdapter
+    private lateinit var productListAdapter: ProductListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -33,8 +33,8 @@ class ProductListFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Keypad.hide(activity!!)
-        productListAdapter = productListAdapter(context!!)
+        hide(activity!!)
+        productListAdapter = ProductListAdapter(context!!)
         productListAdapter.registerDataSetObserver(object : DataSetObserver() {
             override fun onChanged() {
                 noProductsText.visibility = if (productListAdapter.isEmpty()) View.VISIBLE else View.GONE

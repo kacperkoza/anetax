@@ -38,19 +38,16 @@ class MainActivity : AppCompatActivity() {
                 beginFragmentTransaction(AddProductFragment())
                 setActionBarTitle(R.string.title_add_product)
                 onSupportNavigateUp()
-                return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_list -> {
                 beginFragmentTransaction(ProductListFragment())
                 setActionBarTitle(R.string.title_product_list)
                 onSupportNavigateUp()
-                return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_export -> {
                 beginFragmentTransaction(ExportFragment())
                 setActionBarTitle(R.string.title_files_export)
                 onSupportNavigateUp()
-                return@OnNavigationItemSelectedListener true
             }
         }
         false

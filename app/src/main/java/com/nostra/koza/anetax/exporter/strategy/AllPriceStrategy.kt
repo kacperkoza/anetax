@@ -6,6 +6,7 @@ import com.nostra.koza.anetax.util.formatDate
 import com.nostra.koza.anetax.util.formatPrice
 import com.nostra.koza.anetax.util.getDateTimeNowFormatted
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
+import org.apache.poi.hssf.usermodel.HSSFRow
 import org.apache.poi.hssf.usermodel.HSSFSheet
 
 class AllPriceStrategy : WriteStrategy {
@@ -28,46 +29,61 @@ class AllPriceStrategy : WriteStrategy {
         var columnNumber = 0
         var rowNumber = 0
         var ordinalNumber = 1
+        var firstRowWritten = false
+
         addTitleRow(sheet, rowNumber++)
-        var counter = 0
+
         products.forEach { product ->
             run {
-                val priceByProductId = prices.filter { p -> p.productId == product.id }
+                val productPrices = prices.filter { p -> p.productId == product.id }
 
-                priceByProductId.forEach { p ->
+                productPrices.forEach { p ->
                     val row = sheet.createRow(rowNumber++)
-                    if (counter++ == 0) {
+
+                    if (!firstRowWritten) {
                         val ordinalCell = row.createCell(columnNumber++)
                         ordinalCell.setCellValue(HSSFRichTextString(ordinalNumber++.toString()))
-
-                        val nameCell = row.createCell(columnNumber++)
-                        nameCell.setCellValue(HSSFRichTextString(product.name))
-
-                        val barcodeCell = row.createCell(columnNumber++)
-                        if (product.barcode != null) barcodeCell.setCellValue(HSSFRichTextString(product.barcode.barcodeText))
-
-                        val taxCell = row.createCell(columnNumber++)
-                        taxCell.setCellValue(product.taxRate.rate * 100)
+                        columnNumber = writeProductInfo(row, columnNumber, product)
+                        firstRowWritten = true
                     }
-
-                    val priceNetCell = row.createCell(columnNumber++)
-                    priceNetCell.setCellValue(formatPrice(p.price.priceNet))
-
-                    val priceGrossCell = row.createCell(columnNumber++)
-                    priceGrossCell.setCellValue(formatPrice(p.price.priceGross))
-
-                    val priceMarginCell = row.createCell(columnNumber++)
-                    priceMarginCell.setCellValue(formatPrice(p.price.priceMargin))
-
-                    val dateCell = row.createCell(columnNumber++)
-                    dateCell.setCellValue(formatDate(p.date))
-
+                    columnNumber = writePrices(row, columnNumber, p)
                     columnNumber = 4
                 }
                 columnNumber = 0
-                counter = 0
+                firstRowWritten = false
             }
         }
+    }
+
+    private fun writeProductInfo(row: HSSFRow, columnNumber: Int, product: Product): Int {
+        var cn = columnNumber
+
+        val nameCell = row.createCell(cn++)
+        nameCell.setCellValue(HSSFRichTextString(product.name))
+
+        val barcodeCell = row.createCell(cn++)
+        if (product.barcode != null) barcodeCell.setCellValue(HSSFRichTextString(product.barcode.barcodeText))
+
+        val taxCell = row.createCell(cn++)
+        taxCell.setCellValue(product.taxRate.rate * 100)
+
+        return cn
+    }
+
+    private fun writePrices(row: HSSFRow, columnNumber: Int, priceEntry: PriceEntry): Int {
+        var cn = columnNumber
+        val priceNetCell = row.createCell(cn++)
+        priceNetCell.setCellValue(formatPrice(priceEntry.price.priceNet))
+
+        val priceGrossCell = row.createCell(cn++)
+        priceGrossCell.setCellValue(formatPrice(priceEntry.price.priceGross))
+
+        val priceMarginCell = row.createCell(cn++)
+        priceMarginCell.setCellValue(formatPrice(priceEntry.price.priceMargin))
+
+        val dateCell = row.createCell(cn++)
+        dateCell.setCellValue(formatDate(priceEntry.date))
+        return cn
     }
 
     private fun addTitleRow(sheet: HSSFSheet, rowNumber: Int) {

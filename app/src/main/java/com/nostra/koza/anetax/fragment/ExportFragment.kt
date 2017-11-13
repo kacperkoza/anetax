@@ -15,9 +15,9 @@ import com.nostra.koza.anetax.adapter.FileListAdapter
 import com.nostra.koza.anetax.database.*
 import com.nostra.koza.anetax.exporter.ExcelFileExporter
 import com.nostra.koza.anetax.exporter.strategy.AllPriceStrategy
-import com.nostra.koza.anetax.exporter.strategy.WriteStrategy
 import com.nostra.koza.anetax.exporter.strategy.LastPriceStrategy
-import com.nostra.koza.anetax.util.Keypad
+import com.nostra.koza.anetax.exporter.strategy.WriteStrategy
+import com.nostra.koza.anetax.util.hide
 import com.nostra.koza.anetax.util.shortToast
 import kotlinx.android.synthetic.main.fragment_export.*
 import java.io.File
@@ -71,7 +71,7 @@ class ExportFragment : Fragment() {
             }
         }
         fileListAdapter.refresh()
-        Keypad.hide(activity!!)
+        hide(activity!!)
     }
 
     private fun sendEmailWithAttachment(file: File) {

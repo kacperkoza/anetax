@@ -13,7 +13,7 @@ import com.nostra.koza.anetax.database.*
 import com.nostra.koza.anetax.util.formatDate
 import com.nostra.koza.anetax.util.formatPrice
 
-class productListAdapter(val context: Context) : BaseAdapter() {
+class ProductListAdapter(val context: Context) : BaseAdapter() {
 
     private val productDao = ProductDao(ProductDatabase(context).getDao(Product::class.java))
     private val priceEntryDao = PriceEntryDao(ProductDatabase(context).getDao(PriceEntry::class.java))
@@ -21,7 +21,7 @@ class productListAdapter(val context: Context) : BaseAdapter() {
 
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        var holder: ViewHolder
+        val holder: ViewHolder
         var view = convertView
 
         if (view != null) {

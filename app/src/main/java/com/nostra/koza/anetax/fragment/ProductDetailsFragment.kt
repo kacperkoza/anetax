@@ -17,7 +17,7 @@ import com.nostra.koza.anetax.database.Barcode
 import com.nostra.koza.anetax.database.Product
 import com.nostra.koza.anetax.database.ProductDao
 import com.nostra.koza.anetax.database.ProductDatabase
-import com.nostra.koza.anetax.util.Keypad
+import com.nostra.koza.anetax.util.hide
 import com.nostra.koza.anetax.util.shortToast
 import kotlinx.android.synthetic.main.fragment_product_details.*
 
@@ -57,7 +57,7 @@ class ProductDetailsFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Keypad.hide(activity!!)
+        hide(activity!!)
         dialogFactory = DialogFactory(context!!)
         productDao = ProductDao(ProductDatabase(context!!).getDao(Product::class.java))
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)

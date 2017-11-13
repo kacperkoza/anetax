@@ -19,8 +19,8 @@ import com.nostra.koza.anetax.PriceCalculator
 import com.nostra.koza.anetax.R
 import com.nostra.koza.anetax.activity.BarcodeScanActivity
 import com.nostra.koza.anetax.database.*
-import com.nostra.koza.anetax.util.Keypad
 import com.nostra.koza.anetax.util.formatPrice
+import com.nostra.koza.anetax.util.hide
 import com.nostra.koza.anetax.util.shortToast
 
 class AddProductFragment : Fragment() {
@@ -55,7 +55,7 @@ class AddProductFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Keypad.hide(activity!!)
+        hide(activity!!)
         awesomeValidation = AwesomeValidation(ValidationStyle.BASIC)
         awesomeValidation.addValidation(activity, R.id.product_name_et, RegexTemplate.NOT_EMPTY, R.string.invalid_product_name)
         awesomeValidation.addValidation(activity, R.id.barcode_et, ONLY_NUMBERS_PATTERN, R.string.invalid_barcode)
@@ -118,7 +118,7 @@ class AddProductFragment : Fragment() {
     private fun clearAndNotify() {
         shortToast(context!!, getString(R.string.successfully_added_new_product))
         clearAddProductForm()
-        Keypad.hide(activity!!)
+        hide(activity!!)
         productNameText.requestFocus()
     }
 
@@ -162,6 +162,6 @@ class AddProductFragment : Fragment() {
     }
 
     @OnClick(R.id.background_layout)
-    fun hideKeypad() = Keypad.hide(activity!!)
+    fun hideKeypad() = hide(activity!!)
 
 }

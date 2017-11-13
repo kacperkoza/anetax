@@ -33,7 +33,7 @@ class FileListAdapter(private val context: Context) : BaseAdapter() {
         return view!!
     }
 
-    override fun getItemId(position: Int): Long = files.get(position).hashCode().toLong()
+    override fun getItemId(position: Int): Long = getItem(position).hashCode().toLong()
 
     override fun getItem(position: Int): Any = this.files.get(position)
 
